@@ -9,41 +9,41 @@ z2
 cModel Technology
 dC:/Users/Wesley/Documents/CPE 526/Homework3
 Eelevator
-Z0 w1396307052
+Z0 w1396314810
 Z1 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
 Z2 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
 Z3 dX:/CPE526Elevator/Model
 8X:/CPE526Elevator/Model/elevator_entity.vhd
 FX:/CPE526Elevator/Model/elevator_entity.vhd
 l0
-L4
-VN5WX@i=l]Tcj2TSC;m3?z2
-!s100 HAnbgjL52Tkb0BP=D>L`50
+L8
+V8dmM=>;d@SI42o9mL9F0B1
+!s100 JOZ@E2KIgkS?UKVci9A3K2
 Z4 OP;C;10.3;59
 32
-Z5 !s110 1396309278
+!s110 1396314814
 !i10b 1
-!s108 1396309278.544000
+!s108 1396314814.780000
 !s90 -reportprogress|300|-nostats|-work|work|-2002|-explicit|X:/CPE526Elevator/Model/elevator_entity.vhd|
 !s107 X:/CPE526Elevator/Model/elevator_entity.vhd|
-Z6 o-work work -2002 -explicit -O0
-Z7 tExplicit 1
+Z5 o-work work -2002 -explicit -O0
+Z6 tExplicit 1
 Abehavioral
 R1
 R2
-Z8 DEx4 work 8 elevator 0 22 N5WX@i=l]Tcj2TSC;m3?z2
-Z9 8X:/CPE526Elevator/Model/elevator_arc_behave.vhd
-Z10 FX:/CPE526Elevator/Model/elevator_arc_behave.vhd
-l2
-L1
-Z11 Vg_AYiFYDFo4^EmaVPQm5>1
-Z12 !s100 dTL8JcLTCkN[B;Q1_M45m3
+DEx4 work 8 elevator 0 22 8dmM=>;d@SI42o9mL9F0B1
+Z7 8X:/CPE526Elevator/Model/elevator_arc_behave.vhd
+Z8 FX:/CPE526Elevator/Model/elevator_arc_behave.vhd
+l6
+L5
+Z9 VCa4ARSO=I1Vig]VRd0AKB0
+Z10 !s100 jDff>kK72jJL:Nog71oh]3
 R4
 32
-R5
+!s110 1396314815
 !i10b 1
-!s108 1396309278.708000
-Z13 !s90 -reportprogress|300|-nostats|-work|work|-2002|-explicit|X:/CPE526Elevator/Model/elevator_arc_behave.vhd|
-Z14 !s107 X:/CPE526Elevator/Model/elevator_arc_behave.vhd|
+!s108 1396314814.969000
+Z11 !s90 -reportprogress|300|-nostats|-work|work|-2002|-explicit|X:/CPE526Elevator/Model/elevator_arc_behave.vhd|
+Z12 !s107 X:/CPE526Elevator/Model/elevator_arc_behave.vhd|
+R5
 R6
-R7
