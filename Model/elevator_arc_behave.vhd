@@ -15,10 +15,12 @@ architecture behavioral of elevator is
 										 Down2To1);            -- Elevator is moving down from floor 2 to floor 1
 begin
 
-	process (clk)
+	process (clk, rst)
 		variable state : stateType;
 	begin
-		if (clk'event and clk = '1') then
+		if (rst = '1') then
+			state := FloorStop1;
+		elsif (clk'event and clk = '1') then
 			-- change state based on inputs
 			case state is
 				when FloorStop1 =>
@@ -74,41 +76,41 @@ begin
 						state := FloorStop1;
 					end if;
 			end case;
-
-			-- update outputs based on new state
-			case state is
-				when FloorStop1 =>
-					door <= '0';
-					direction <= "00";
-				when FloorStop2 =>
-					door <= '0';
-					direction <= "00";
-				when FloorStop3 =>
-					door <= '0';
-					direction <= "00";
-				when WaitForClosedDoors1 =>
-					door <= '1';
-					direction <= "00";
-				when WaitForClosedDoors2 =>
-					door <= '1';
-					direction <= "00";
-				when WaitForClosedDoors3 =>
-					door <= '1';
-					direction <= "00";
-				when Up1To2 =>
-					door <= '1';
-					direction <= "01";
-				when Up2To3 =>
-					door <= '1';
-					direction <= "01";
-				when Down3To2 =>
-					door <= '1';
-					direction <= "10";
-				when Down2To1 =>
-					door <= '1';
-					direction <= "10";
-			end case;
 		end if;
+
+		-- update outputs based on new state
+		case state is
+			when FloorStop1 =>
+				door <= '0';
+				direction <= "00";
+			when FloorStop2 =>
+				door <= '0';
+				direction <= "00";
+			when FloorStop3 =>
+				door <= '0';
+				direction <= "00";
+			when WaitForClosedDoors1 =>
+				door <= '1';
+				direction <= "00";
+			when WaitForClosedDoors2 =>
+				door <= '1';
+				direction <= "00";
+			when WaitForClosedDoors3 =>
+				door <= '1';
+				direction <= "00";
+			when Up1To2 =>
+				door <= '1';
+				direction <= "01";
+			when Up2To3 =>
+				door <= '1';
+				direction <= "01";
+			when Down3To2 =>
+				door <= '1';
+				direction <= "10";
+			when Down2To1 =>
+				door <= '1';
+				direction <= "10";
+		end case;
 	end process;
 
 end architecture;
