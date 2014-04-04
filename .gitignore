@@ -2,7 +2,7 @@
 *.bak
 
 # Project files
-work/*
+Model/work/*
 *.mti
 *.mpf
 transcript
