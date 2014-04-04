@@ -1,2 +1,8 @@
 # Backup files
 *.bak
+
+# Project files
+work/*
+*.mti
+*.mpf
+transcript
