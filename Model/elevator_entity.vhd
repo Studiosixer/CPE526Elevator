@@ -16,17 +16,17 @@ entity elevator is
 	-- F2	 - floor 2 internal button
 	-- F3  - floor 3 internal button
 	-- DC  - doors closed sensor
-	-- FS  - floor sensor
+	-- FS  - floor sensor (2 bits)
 	--   00 - invalid
 	--   01 - floor 1
 	--   10 - floor 2
 	--   11 - floor 3
 
 	----- outputs -----
-	-- door - open/close doors
+	-- door - open/close doors (2 bits)
 	-- 	 0 - open
 	--   1 - close
-	-- direction - elevator direction
+	-- direction - elevator direction (2 bits)
 	--   00 - stationary
 	--   01 - up
 	--   10 - down

@@ -3,8 +3,16 @@
 -- Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
 
 architecture behavioral of elevator is
-	type stateType is (FloorStop1, FloorStop2, FloorStop3, CloseDoors1, CloseDoors2, CloseDoors3,
-										 Up1To2, Up2To3, Down3To2, Down2To1);
+	type stateType is (FloorStop1,           -- Elevator has stopped on floor 1
+										 FloorStop2,           -- Elevator has stopped on floor 2
+										 FloorStop3,           -- Elevator has stopped on floor 3
+										 WaitForClosedDoors1,  -- Waiting for doors to close on floor 1
+										 WaitForClosedDoors2,  -- Waiting for doors to close on floor 2
+										 WaitForClosedDoors3,  -- Waiting for doors to close on floor 3
+										 Up1To2,               -- Elevator is moving up from floor 1 to floor 2
+										 Up2To3,               -- Elevator is moving up from floor 2 to floor 3
+										 Down3To2,             -- Elevator is moving down from floor 3 to floor 2
+										 Down2To1);            -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType;
 begin
 
@@ -24,13 +32,13 @@ begin
 				when FloorStop3 =>
 					door <= '0';
 					direction <= "00";
-				when CloseDoors1 =>
+				when WaitForClosedDoors1 =>
 					door <= '1';
 					direction <= "00";
-				when CloseDoors2 =>
+				when WaitForClosedDoors2 =>
 					door <= '1';
 					direction <= "00";
-				when CloseDoors3 =>
+				when WaitForClosedDoors3 =>
 					door <= '1';
 					direction <= "00";
 				when Up1To2 =>
