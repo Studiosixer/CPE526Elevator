@@ -1,6 +1,7 @@
 -- Elevator Controller
 -- CPE 526
 -- Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
+use WORK.all;
 
 architecture behavioral of elevator is
 	type stateType is (FloorStop1,           -- Elevator has stopped on floor 1
@@ -14,7 +15,9 @@ architecture behavioral of elevator is
 										 Down3To2,             -- Elevator is moving down from floor 3 to floor 2
 										 Down2To1);            -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType;
+	signal TZ, ZERO : std_logic := '0';
 begin
+	TIMER: entity door_timer(BLAH) port map(rst, clk, TZ, ZERO);
 	process (clk, rst)
 		--variable state : stateType;
 	begin
@@ -26,6 +29,7 @@ begin
 				when FloorStop1 =>
 					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1') then
 						state <= WaitForClosedDoors1;
+						TZ <= '1';
 					end if;
 				when FloorStop2 =>
 					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1') then
@@ -36,7 +40,10 @@ begin
 						state <= WaitForClosedDoors3;
 					end if;
 				when WaitForClosedDoors1 =>
-					if (DC = '1') then
+					if (ZERO = '1')then
+						--DC <= '1';
+						TZ <= '0';
+--if (DC = '1') then
 						state <= Up1To2;
 					end if;
 				when WaitForClosedDoors2 =>
