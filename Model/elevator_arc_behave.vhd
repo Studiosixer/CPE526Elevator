@@ -1,108 +1,107 @@
 -- Elevator Controller
 -- CPE 526
 -- Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
-use WORK.all;
 
 architecture behavioral of elevator is
-	type stateType is (FloorStop1,           -- Elevator has stopped on floor 1
-										 FloorStop2,           -- Elevator has stopped on floor 2
-										 FloorStop3,           -- Elevator has stopped on floor 3
-										 WaitForClosedDoors1,  -- Waiting for doors to close on floor 1
-										 WaitForClosedDoors2,  -- Waiting for doors to close on floor 2
-										 WaitForClosedDoors3,  -- Waiting for doors to close on floor 3
-										 Up1To2,               -- Elevator is moving up from floor 1 to floor 2
-										 Up2To3,               -- Elevator is moving up from floor 2 to floor 3
-										 Down3To2,             -- Elevator is moving down from floor 3 to floor 2
-										 Down2To1);            -- Elevator is moving down from floor 2 to floor 1
-	signal state : stateType;
-	signal TZ, ZERO : std_logic := '0';
+	type stateType is (ClosingDoors1,  -- Closing doors while on floor 1
+										 ClosingDoors2,  -- Closing doors while on floor 2
+										 ClosingDoors3,  -- Closing doors while on floor 3
+										 OpenedDoors1,   -- Elevator is on floor 1 with doors open
+										 OpenedDoors2,   -- Elevator is on floor 2 with doors open
+										 OpenedDoors3,   -- Elevator is on floor 3 with doors open
+										 Up1To2,         -- Elevator is moving up from floor 1 to floor 2
+										 Up2To3,         -- Elevator is moving up from floor 2 to floor 3
+										 Down3To2,       -- Elevator is moving down from floor 3 to floor 2
+										 Down2To1);      -- Elevator is moving down from floor 2 to floor 1
+	signal state : stateType; -- the current state we're in
+	signal ZERO : std_logic; 		-- goes high when timer has reached zero
 begin
-	TIMER: entity door_timer(BLAH) port map(rst, clk, TZ, ZERO);
 	process (clk, rst)
-		--variable state : stateType;
 	begin
 		if (rst = '1') then
-			state <= FloorStop1;
+			state <= ClosingDoors1;
 		elsif (clk'event and clk = '1') then
 			-- change state based on inputs
 			case state is
-				when FloorStop1 =>
-					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1') then
-						state <= WaitForClosedDoors1;
-						TZ <= '1';
+				when OpenedDoors1 =>
+					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
+						state <= ClosingDoors1;
 					end if;
-				when FloorStop2 =>
-					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1') then
-						state <= WaitForClosedDoors2;
+				when OpenedDoors2 =>
+					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
+						state <= ClosingDoors2;
 					end if;
-				when FloorStop3 =>
-					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1') then
-						state <= WaitForClosedDoors3;
+				when OpenedDoors3 =>
+					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
+						state <= ClosingDoors3;
 					end if;
-				when WaitForClosedDoors1 =>
-					if (ZERO = '1')then
-						--DC <= '1';
-						TZ <= '0';
---if (DC = '1') then
+				when ClosingDoors1 =>
+					if (U1 = '1') then
+						state <= OpenedDoors1;
+					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
 					end if;
-				when WaitForClosedDoors2 =>
-					if (DC = '1') then
+				when ClosingDoors2 =>
+					if (U2 = '1' or D2 = '1') then
+						state <= OpenedDoors2;
+					elsif (DC = '1') then
 						if (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
 						elsif (U1 = '1' or F1 = '1') then
 							state <= Down2To1;
 						end if;
 					end if;
-				when WaitForClosedDoors3 =>
-					if (DC = '1') then
+				when ClosingDoors3 =>
+					if (D3 = '1') then
+						state <= OpenedDoors3;
+					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
 					end if;
 				when Up1To2 =>
 					if (FS = "10") then
 						if (F2 = '1' or U2 = '1') then
-							state <= FloorStop2;
+							state <= OpenedDoors2;
 						else
 							state <= Up2To3;
 						end if;
 					end if;
 				when Up2To3 =>
 					if (FS = "11") then
-						state <= FloorStop3;
+						state <= OpenedDoors3;
 					end if;
 				when Down3To2 =>
 					if (FS = "10") then
 						if (F2 = '1' or D2 = '1') then
-							state <= FloorStop2;
+							state <= OpenedDoors2;
 						else
 							state <= Down2To1;
 						end if;
 					end if;
 				when Down2To1 =>
 					if (FS = "01") then
-						state <= FloorStop1;
+						state <= OpenedDoors1;
 					end if;
 			end case;
 		end if;
 
 		-- update outputs based on new state
 		case state is
-			when FloorStop1 =>
+			when OpenedDoors1 =>
 				door <= '0';
 				direction <= "00";
-			when FloorStop2 =>
+			when OpenedDoors2 =>
 				door <= '0';
 				direction <= "00";
-			when FloorStop3 =>
+			when OpenedDoors3 =>
 				door <= '0';
 				direction <= "00";
-			when WaitForClosedDoors1 =>
+			when ClosingDoors1 =>
 				door <= '1';
 				direction <= "00";
-			when WaitForClosedDoors2 =>
+			when ClosingDoors2 =>
 				door <= '1';
 				direction <= "00";
-			when WaitForClosedDoors3 =>
+			when ClosingDoors3 =>
 				door <= '1';
 				direction <= "00";
 			when Up1To2 =>
