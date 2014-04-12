@@ -21,6 +21,8 @@ begin
 	begin
 		if (rst = '1') then
 			state <= ClosingDoors1;
+			door <= '1';
+			direction <= "00";
 			U1 := '0';
 			U2 := '0';
 			D2 := '0';
@@ -55,106 +57,104 @@ begin
 			-- change state based on inputs
 			case state is
 				when OpenedDoors1 =>
+					U1 := '0';
+					F1 := '0';
 					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors1;
+						door <= '1';
+						direction <= "00";
 					end if;
 				when OpenedDoors2 =>
+					U2 := '0';
+					D2 := '0';
+					F2 := '0';
 					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors2;
+						door <= '1';
+						direction <= "00";
 					end if;
 				when OpenedDoors3 =>
+					D3 := '0';
+					F3 := '0';
 					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
 						state <= ClosingDoors3;
+						door <= '1';
+						direction <= "00";
 					end if;
 				when ClosingDoors1 =>
 					if (U1 = '1') then
-						U1 := '0';
-						F1 := '0';
 						state <= OpenedDoors1;
+						door <= '0';
+						direction <= "00";
 					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
+						door <= '1';
+						direction <= "01";
 					end if;
 				when ClosingDoors2 =>
 					if (U2 = '1' or D2 = '1') then
-						U2 := '0';
-						D2 := '0';
-						F2 := '0';
 						state <= OpenedDoors2;
+						door <= '0';
+						direction <= "00";
 					elsif (DC = '1') then
 						if (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
+							door <= '1';
+							direction <= "01";
 						elsif (U1 = '1' or F1 = '1') then
 							state <= Down2To1;
+							door <= '1';
+							direction <= "10";
 						end if;
 					end if;
 				when ClosingDoors3 =>
 					if (D3 = '1') then
-						D3 := '0';
-						F3 := '0';
 						state <= OpenedDoors3;
+						door <= '0';
+						direction <= "00";
 					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
+						door <= '1';
+						direction <= "10";
 					end if;
 				when Up1To2 =>
 					if (FS = "10") then
 						if (F2 = '1' or U2 = '1') then
 							state <= OpenedDoors2;
+							door <= '0';
+							direction <= "00";
 						else
 							state <= Up2To3;
+							door <= '1';
+							direction <= "01";
 						end if;
 					end if;
 				when Up2To3 =>
 					if (FS = "11") then
 						state <= OpenedDoors3;
+						door <= '0';
+						direction <= "00";
 					end if;
 				when Down3To2 =>
 					if (FS = "10") then
 						if (F2 = '1' or D2 = '1') then
 							state <= OpenedDoors2;
+							door <= '0';
+							direction <= "00";
 						else
 							state <= Down2To1;
+							door <= '1';
+							direction <= "10";
 						end if;
 					end if;
 				when Down2To1 =>
 					if (FS = "01") then
 						state <= OpenedDoors1;
+						door <= '0';
+						direction <= "00";
 					end if;
 			end case;
 		end if;
-
-		-- update outputs based on new state
-		case state is
-			when OpenedDoors1 =>
-				door <= '0';
-				direction <= "00";
-			when OpenedDoors2 =>
-				door <= '0';
-				direction <= "00";
-			when OpenedDoors3 =>
-				door <= '0';
-				direction <= "00";
-			when ClosingDoors1 =>
-				door <= '1';
-				direction <= "00";
-			when ClosingDoors2 =>
-				door <= '1';
-				direction <= "00";
-			when ClosingDoors3 =>
-				door <= '1';
-				direction <= "00";
-			when Up1To2 =>
-				door <= '1';
-				direction <= "01";
-			when Up2To3 =>
-				door <= '1';
-				direction <= "01";
-			when Down3To2 =>
-				door <= '1';
-				direction <= "10";
-			when Down2To1 =>
-				door <= '1';
-				direction <= "10";
-		end case;
 	end process;
 
 end architecture;
