@@ -17,10 +17,41 @@ architecture behavioral of elevator is
 	signal ZERO : std_logic; 		-- goes high when timer has reached zero
 begin
 	process (clk, rst)
+		variable U1, U2, D2, D3, F1, F2, F3 : std_logic := '0';
 	begin
 		if (rst = '1') then
 			state <= ClosingDoors1;
+			U1 := '0';
+			U2 := '0';
+			D2 := '0';
+			D3 := '0';
+			F1 := '0';
+			F2 := '0';
+			F3 := '0';
 		elsif (clk'event and clk = '1') then
+			-- latch button inputs when pressed
+			if (UP1 = '1') then
+				U1 := '1';
+			end if;
+			if (UP2 = '1') then
+				U2 := '1';
+			end if;
+			if (DOWN2 = '1') then
+				D2 := '1';
+			end if;
+			if (DOWN3 = '1') then
+				D3 := '1';
+			end if;
+			if (FLOOR1 = '1') then
+				F1 := '1';
+			end if;
+			if (FLOOR2 = '1') then
+				F2 := '1';
+			end if;
+			if (FLOOR3 = '1') then
+				F3 := '1';
+			end if;
+
 			-- change state based on inputs
 			case state is
 				when OpenedDoors1 =>
@@ -37,12 +68,17 @@ begin
 					end if;
 				when ClosingDoors1 =>
 					if (U1 = '1') then
+						U1 := '0';
+						F1 := '0';
 						state <= OpenedDoors1;
 					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
 					end if;
 				when ClosingDoors2 =>
 					if (U2 = '1' or D2 = '1') then
+						U2 := '0';
+						D2 := '0';
+						F2 := '0';
 						state <= OpenedDoors2;
 					elsif (DC = '1') then
 						if (D3 = '1' or F3 = '1') then
@@ -53,6 +89,8 @@ begin
 					end if;
 				when ClosingDoors3 =>
 					if (D3 = '1') then
+						D3 := '0';
+						F3 := '0';
 						state <= OpenedDoors3;
 					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
