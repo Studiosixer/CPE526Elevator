@@ -95,6 +95,7 @@ begin
 						direction <= "00";
 					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
+						STOP <= '1';
 						door <= '1';
 						direction <= "01";
 					end if;
@@ -106,6 +107,7 @@ begin
 						door <= '0';
 						direction <= "00";
 					elsif (DC = '1') then
+						STOP <= '1';
 						if (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
 							door <= '1';
@@ -125,6 +127,7 @@ begin
 						direction <= "00";
 					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
+						STOP <= '1';
 						door <= '1';
 						direction <= "10";
 					end if;
@@ -133,8 +136,7 @@ begin
 						if (F2 = '1' or U2 = '1') then
 							state <= OpenedDoors2;
 							START <= '1';
-						--else
-						--	state <= Up2To3;
+							STOP <= '0';
 							door <= '0';
 							direction <= "00";
 						else
@@ -146,6 +148,8 @@ begin
 				when Up2To3 =>
 					if (FS = "11") then
 						state <= OpenedDoors3;
+						START <= '1';
+						STOP <= '0';
 						door <= '0';
 						direction <= "00";
 					end if;
@@ -153,8 +157,8 @@ begin
 					if (FS = "10") then
 						if (F2 = '1' or D2 = '1') then
 							state <= OpenedDoors2;
-						--else
-						--	state <= Down2To1;
+							START <= '1';
+							STOP <= '0';
 							door <= '0';
 							direction <= "00";
 						else
@@ -166,6 +170,8 @@ begin
 				when Down2To1 =>
 					if (FS = "01") then
 						state <= OpenedDoors1;
+						START <= '1';
+						STOP <= '0';
 						door <= '0';
 						direction <= "00";
 					end if;
