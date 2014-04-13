@@ -1,6 +1,7 @@
 -- Elevator Controller
 -- CPE 526
 -- Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
+use WORK.all;
 
 architecture behavioral of elevator is
 	type stateType is (ClosingDoors1,  -- Closing doors while on floor 1
@@ -14,8 +15,9 @@ architecture behavioral of elevator is
 										 Down3To2,       -- Elevator is moving down from floor 3 to floor 2
 										 Down2To1);      -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType; -- the current state we're in
-	signal ZERO : std_logic; 		-- goes high when timer has reached zero
+	signal ZERO, START, STOP : std_logic; 		-- goes high when timer has reached zero
 begin
+	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, START, STOP, ZERO);
 	process (clk, rst)
 	begin
 		if (rst = '1') then
@@ -26,24 +28,31 @@ begin
 				when OpenedDoors1 =>
 					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors1;
+						STOP <= '1';
 					end if;
 				when OpenedDoors2 =>
 					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors2;
+						STOP <= '1';
 					end if;
 				when OpenedDoors3 =>
 					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
 						state <= ClosingDoors3;
+						STOP <= '1';
 					end if;
 				when ClosingDoors1 =>
 					if (U1 = '1') then
 						state <= OpenedDoors1;
+						START <= '1';
+						STOP <= '0';
 					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
 					end if;
 				when ClosingDoors2 =>
 					if (U2 = '1' or D2 = '1') then
 						state <= OpenedDoors2;
+						START <= '1';
+						STOP <= '0';
 					elsif (DC = '1') then
 						if (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
@@ -54,6 +63,8 @@ begin
 				when ClosingDoors3 =>
 					if (D3 = '1') then
 						state <= OpenedDoors3;
+						START <= '1';
+						STOP <= '0';
 					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
 					end if;
@@ -61,8 +72,9 @@ begin
 					if (FS = "10") then
 						if (F2 = '1' or U2 = '1') then
 							state <= OpenedDoors2;
-						else
-							state <= Up2To3;
+							START <= '1';
+						--else
+						--	state <= Up2To3;
 						end if;
 					end if;
 				when Up2To3 =>
@@ -73,8 +85,8 @@ begin
 					if (FS = "10") then
 						if (F2 = '1' or D2 = '1') then
 							state <= OpenedDoors2;
-						else
-							state <= Down2To1;
+						--else
+						--	state <= Down2To1;
 						end if;
 					end if;
 				when Down2To1 =>

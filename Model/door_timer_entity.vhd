@@ -6,6 +6,6 @@ Library IEEE;
 use ieee.std_logic_1164.all;
 
 entity door_timer is
-	port(RESET, CLK : in std_logic;
+	port(RESET, CLK , START, STOP: in std_logic;
 			 ZERO : out std_logic);
 end door_timer;
