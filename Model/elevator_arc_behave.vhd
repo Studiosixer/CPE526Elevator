@@ -15,11 +15,12 @@ architecture behavioral of elevator is
 										 Down3To2,       -- Elevator is moving down from floor 3 to floor 2
 										 Down2To1);      -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType; -- the current state we're in
-	signal ZERO, START, STOP : std_logic; 		-- goes high when timer has reached zero
+	signal ZERO, ENABLE : std_logic; 		-- goes high when timer has reached zero
+	signal TEST : std_logic; 
 begin
-	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, START, STOP, ZERO);
+	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, ENABLE, ZERO);
 	process (clk, rst)
-		variable U1, U2, D2, D3, F1, F2, F3 : std_logic := '0';
+		variable U1, U2, D2, D3, F1, F2, F3 : std_logic ;--:= '0';
 	begin
 		if (rst = '1') then
 			state <= ClosingDoors1;
@@ -42,9 +43,11 @@ begin
 			end if;
 			if (DOWN2 = '1') then
 				D2 := '1';
+				TEST <= D2;
 			end if;
 			if (DOWN3 = '1') then
 				D3 := '1';
+				TEST <= D3;
 			end if;
 			if (FLOOR1 = '1') then
 				F1 := '1';
@@ -63,7 +66,7 @@ begin
 					F1 := '0';
 					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors1;
-						STOP <= '1';
+						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
 					end if;
@@ -73,7 +76,7 @@ begin
 					F2 := '0';
 					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors2;
-						STOP <= '1';
+						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
 					end if;
@@ -82,32 +85,30 @@ begin
 					F3 := '0';
 					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
 						state <= ClosingDoors3;
-						STOP <= '1';
+						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
 					end if;
 				when ClosingDoors1 =>
 					if (U1 = '1') then
 						state <= OpenedDoors1;
-						START <= '1';
-						STOP <= '0';
+						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
 					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
-						STOP <= '1';
+						--ENABLE <= '0';
 						door <= '1';
 						direction <= "01";
 					end if;
 				when ClosingDoors2 =>
 					if (U2 = '1' or D2 = '1') then
 						state <= OpenedDoors2;
-						START <= '1';
-						STOP <= '0';
+						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
 					elsif (DC = '1') then
-						STOP <= '1';
+						ENABLE <= '0';
 						if (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
 							door <= '1';
@@ -121,13 +122,12 @@ begin
 				when ClosingDoors3 =>
 					if (D3 = '1') then
 						state <= OpenedDoors3;
-						START <= '1';
-						STOP <= '0';
+						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
 					elsif (DC = '1' and (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1')) then
 						state <= Down3To2;
-						STOP <= '1';
+						--ENABLE <= '0';
 						door <= '1';
 						direction <= "10";
 					end if;
@@ -135,8 +135,7 @@ begin
 					if (FS = "10") then
 						if (F2 = '1' or U2 = '1') then
 							state <= OpenedDoors2;
-							START <= '1';
-							STOP <= '0';
+							ENABLE <= '1';
 							door <= '0';
 							direction <= "00";
 						else
@@ -148,8 +147,7 @@ begin
 				when Up2To3 =>
 					if (FS = "11") then
 						state <= OpenedDoors3;
-						START <= '1';
-						STOP <= '0';
+						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
 					end if;
@@ -157,8 +155,7 @@ begin
 					if (FS = "10") then
 						if (F2 = '1' or D2 = '1') then
 							state <= OpenedDoors2;
-							START <= '1';
-							STOP <= '0';
+							ENABLE <= '1';
 							door <= '0';
 							direction <= "00";
 						else
@@ -170,8 +167,7 @@ begin
 				when Down2To1 =>
 					if (FS = "01") then
 						state <= OpenedDoors1;
-						START <= '1';
-						STOP <= '0';
+						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
 					end if;

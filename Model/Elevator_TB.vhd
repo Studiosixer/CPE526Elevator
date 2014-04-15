@@ -25,8 +25,8 @@ begin
   end process;
   process
     variable VLINE: LINE;
-		variable VIN_RST, VIN_U1, VIN_U2, VIN_D2, VIN_D3, VIN_F1, VIN_F2, VIN_F3, VIN_DC: std_logic;
-		variable VIN_FS: std_logic_vector(1 downto 0);
+		variable VIN_RST, VIN_U1, VIN_U2, VIN_D2, VIN_D3, VIN_F1, VIN_F2, VIN_F3, VIN_DC, VIN_DOOR: std_logic;
+		variable VIN_FS, VIN_DIRECTION: std_logic_vector(1 downto 0);
     file INVECT : TEXT is "elevatorInput.txt";
   begin
     READLINE(INVECT, VLINE);
@@ -43,6 +43,8 @@ begin
 			READ(VLINE, VIN_F3);
 			READ(VLINE, VIN_DC);
 			READ(VLINE, VIN_FS);
+			READ(VLINE, VIN_DOOR);
+			READ(VLINE, VIN_DIRECTION);
 			rst <= VIN_RST;
 	    U1 <= VIN_U1;
 			U2 <= VIN_U2;
@@ -57,10 +59,13 @@ begin
 			--DEBUG <= VOUT;
 			--INPUT <= VIN2;
       wait until CLK = '1';
-      --wait for 2 ns;
-      --  assert (Grant = VOUT) 
-      --    report "Grant not expected value"
-      --    severity WARNING;					        
+      wait for 2 ns;
+      assert (door = VIN_DOOR) 
+      	report "Door (open/closed) not expected value"
+        severity WARNING;
+			assert (direction = VIN_DIRECTION)
+				report "Direction not expected value"
+				severity WARNING;		        
     end loop; 
     wait;
   end process;
