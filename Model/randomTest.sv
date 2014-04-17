@@ -119,35 +119,60 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 		//p.randomize();
 		//$cast(loc, num); //
 		//Initialize inputs
-		elevatorif.u1 <= 1'b0;
-		elevatorif.u2 <= 1'b0;
-		elevatorif.d2 <= 1'b0;
-		elevatorif.d3 <= 1'b0;
-		elevatorif.f1 <= 1'b0;
-		elevatorif.f2 <= 1'b0;
-		elevatorif.f3 <= 1'b0;
-		elevatorif.dc <= 1'b0;
-		elevatorif.fs <= 2'b01;
 
 		p = new();
-		p.randomize();
 
-		case (butIdx) inside
-			0:
-				repeat (p.timeBeforePress) @ elevatorif.cb;
-				@(elevatorif.cb)
-				elevatorif.u1 <= 1'b1;
-				repeat (p.timeBeforePress) @ elevatorif.cb;
-				elevatorif.u1 <= 1'b0;
-		endcase
-		
+		repeat(1 + butIdx)
+			p.randomize();
+
+		@(elevatorif.cb)
+		elevatorif.rst <= 1'b1;
+		@(elevatorif.cb)
+		elevatorif.rst <= 1'b0;
+
+		if( 0 == butIdx ) begin				//On floor 1, press up
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.u1 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.u1 <= 1'b0;
+		end else if( 1 == butIdx ) begin //On floor 2, press up
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.u2 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.u2 <= 1'b0;
+		end else if( 2 == butIdx ) begin //On floor 2, press down
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.d2 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.d2 <= 1'b0;
+		end else if( 3 == butIdx ) begin //On floor 3, press down
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.d3 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.d3 <= 1'b0;
+		end else if( 4 == butIdx ) begin //In elevator, press 1
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f1 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f1 <= 1'b0;
+		end else if( 5 == butIdx ) begin //In elevator, press 2
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f2 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f2 <= 1'b0;
+		end else if( 6 == butIdx ) begin //In elevator, press 3
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f3 <= 1'b1;
+			repeat (p.timeBeforePress) @ elevatorif.cb;
+			elevatorif.f3 <= 1'b0;
+		end	// if 1 == butIdx
 
 	end //End initial begin
 endprogram  //end program ButtonTest
 
 module top;
 	bit clk;
-	always #50 clk = ~clk;
+	always #5 clk = ~clk;
 
 	elevator_if elevatorif(clk);
 	elevator E(
