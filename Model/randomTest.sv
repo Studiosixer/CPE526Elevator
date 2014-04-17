@@ -100,6 +100,51 @@ module elevator_test(elevator_if elevatorif);
 
 endmodule
 
+program ButtonTest(elevator_if elevatorif, input int butIdx);
+	typedef enum {ClosingDoors1,
+						ClosingDoors2,
+						ClosingDoors3,
+						OpenedDoors1,
+						OpenedDoors2,
+						OpenedDoors3,
+						Up1To2,
+						Up2To3,
+						Down3To2,
+						Down2To1} states;
+	typedef enum {U1, U2, D2, D3, F1, F2, F3} buttons;
+	typedef enum {FIRST, SECOND, THIRD, IN_ELEV} location;
+	location loc;
+	Packet p;
+	initial begin
+		//p.randomize();
+		//$cast(loc, num); //
+		//Initialize inputs
+		elevatorif.u1 <= 1'b0;
+		elevatorif.u2 <= 1'b0;
+		elevatorif.d2 <= 1'b0;
+		elevatorif.d3 <= 1'b0;
+		elevatorif.f1 <= 1'b0;
+		elevatorif.f2 <= 1'b0;
+		elevatorif.f3 <= 1'b0;
+		elevatorif.dc <= 1'b0;
+		elevatorif.fs <= 2'b01;
+
+		p = new();
+		p.randomize();
+
+		case (butIdx) inside
+			0:
+				repeat (p.timeBeforePress) @ elevatorif.cb;
+				@(elevatorif.cb)
+				elevatorif.u1 <= 1'b1;
+				repeat (p.timeBeforePress) @ elevatorif.cb;
+				elevatorif.u1 <= 1'b0;
+		endcase
+		
+
+	end //End initial begin
+endprogram  //end program ButtonTest
+
 module top;
 	bit clk;
 	always #50 clk = ~clk;
@@ -119,5 +164,13 @@ module top;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	elevator_test Test1(elevatorif);
+	//elevator_test Test1(elevatorif);
+	ButtonTest Test0(elevatorif, 0);
+	ButtonTest Test1(elevatorif, 1);
+	ButtonTest Test2(elevatorif, 2);
+	ButtonTest Test3(elevatorif, 3);
+	ButtonTest Test4(elevatorif, 4);
+	ButtonTest Test5(elevatorif, 5);
+	ButtonTest Test6(elevatorif, 6);
+
 endmodule
