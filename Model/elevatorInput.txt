@@ -1,14 +1,30 @@
-rst U1	U2	D2	D3	F1	F2	F3	DC	FS Note
-1 0	0	0	0	0	0	0	0	00	Reset
-0 0	1	0	0	0	0	0	0	00	Up rqst at floor 2
-0 0	0	0	0	0	0	0	1	00	
-0 1	0	1	0	0	1	0	0	10
-0 0	0	0	0	1	0	0	0	00
-0 0	1	0	0	0	0	0	0	00
-0 0	0	0	0	0	0	1	0	10
-0 0	0	1	1	0	0	0	0	10
-1 0	0	0	0	0	0	0	0	00
-0 0	0	0	0	0	0	0	0	00
-0 0	0	0	0	0	0	0	0	00
-0 0	0	0	0	0	0	0	0	00
-0 0	0	0	0	0	0	0	0	00
+rst Up1	Up2	Down2	Down3	Floor1	Floor2	Floor3	DC	FS Door Direction State Time(Read)
+1 0	0	0	0	0	0	0	0 00 1 00	ClosingDoors1	
+0 0	1	0	0	0	0	0	0	00 1 00	ClosingDoors1	
+0 0	0	0	0	0	0	0	1	00 1 01	Up1To2	
+0 0	0	0	0	0	0	0	0	10 0 00	OpenedDoors2	
+0 0	0	0	0	0	0	1	0	00 1 00	ClosingDoors2	
+0 0	0	0	0	0	0	0	1	00 1 01	Up2To3 
+0 0	0	0	0	0	0	0	0	00 1 01	Up2To3	
+0 0	0	0	0	0	0	0	0	00 1 01	Up2To3	
+0 0	0	0	0	0	0	0	0	11 0 00	OpenedDoors3	
+1 0	0	0	0	0	0	0	0	00 1 00 ClosingDoors1
+0 1	0	0	0	0	0	0	0	00 0 00 OpenedDoors1	 
+0 0	0	0	0	0	0	1	0	00 1 00	ClosingDoors1	
+0 0	0	0	0	0	0	0	1	00 1 01	Up1To2
+0 0	0	0	0	0	0	0	0	10 1 01	Up2To3
+0 0	0	0	0	0	0	0	0	11 0 00	OpenedDoors3
+0 0	0	0	0	0	0	0	0	00 0 00	OpenedDoors3
+0 0	0	0	0	0	0	0	0	00 0 00	OpenedDoors3
+0 0	0	0	0	0	0	0	0	00 0 00	OpenedDoors3
+0 0	0	0	0	0	0	0	0	00 0 00	OpenedDoors3
+0 0	0	0	0	0	0	0	0	00 1 00	ClosingDoors3
+0 0	0	0	0	0	0	0	0	00 1 00	ClosingDoors3
+1 0 0 0 0 0 0 0 0 00 1 00 ClosingDoors1
+0 0 0 1 1 0 0 0 0 00 1 00 ClosingDoors1
+0 0 0 0 0 0 0 0 1 00 1 01 Up1To2
+0 0 0 0 0 0 0 0 0 10 0 00 OpenedDoors2
+0 0 0 0 0 1 0 0 0 00 1 00 ClosingDoors2
+0 0 0 0 0 0 0 0 1 00 1 10 Down2To1
+0 0 0 0 0 0 0 0 0 01 0 00 OpenedDoors1
+
