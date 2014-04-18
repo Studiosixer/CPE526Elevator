@@ -5,8 +5,8 @@
 package random;
 	class Packet;
 		rand int bttnPressTime,		//The amount of time a button is pressed
-						 dcTime,					//...?
-						 travelTime,			//...?
+						 dcTime,					//The amount of time it takes the doors to close
+						 travelTime,			//The amount of time it takes for an elevator to travel from one floor to the next
 						 timeBeforePress;	//Amount of time in clock cycles before the button is pressed again
 		constraint c {bttnPressTime >= 1; bttnPressTime <= 8;
 									dcTime >= 5; dcTime <= 20;
