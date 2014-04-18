@@ -48,7 +48,7 @@ module elevator_test(elevator_if elevatorif);
 		elevatorif.rst <= 1'b0;
 		@(elevatorif.cb);
 
-		/*** Go up from floor 1 to floor 2 ***/
+		//Go up from floor 1 to floor 2 
 		p.randomize();
 
 		// assert we're in initial state
@@ -97,7 +97,7 @@ module elevator_test(elevator_if elevatorif);
 		assert(elevatorif.door == 1'b0);
 		assert(elevatorif.dir == 2'b00);
 
-		/*** Go up from floor 2 to floor 3 ***/
+		// Go up from floor 2 to floor 3 
 		p.randomize();
 
 		// floor 3 button pressed
@@ -131,7 +131,7 @@ module elevator_test(elevator_if elevatorif);
 		assert(elevatorif.door == 1'b0);
 		assert(elevatorif.dir == 2'b00);
 
-		/*** Go down from floor 3 to floor 2 ***/
+		// Go down from floor 3 to floor 2 
 		p.randomize();
 
 		// floor 2 down button pressed
