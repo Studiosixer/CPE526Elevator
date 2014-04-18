@@ -43,7 +43,6 @@ module elevator_test(elevator_if elevatorif);
 		elevatorif.f1 <= 1'b0;
 		elevatorif.f2 <= 1'b0;
 		elevatorif.f3 <= 1'b0;
-		elevatorif.dc <= 1'b0;
 		elevatorif.fs <= 2'b01;
 		// reset device
 		elevatorif.rst <= 1'b1;
