@@ -153,12 +153,3 @@ module elevator_test(elevator_if elevatorif);
 	end // initial
 
 endmodule 
-
-
-module DoorSensor(elevator_if elevatorif);
-	always @(posedge elevatorif.dStartTimer) begin
-		repeat(10) @ elevatorif.cb;
-		elevatorif.dc <= 1'b1;
-	end
-
-endmodule

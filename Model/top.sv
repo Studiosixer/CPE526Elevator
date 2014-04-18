@@ -3,7 +3,7 @@ import random::Packet;
 interface elevator_if(input bit clk);
 	logic rst, u1, u2, d2, d3, f1, f2, f3, dc, door;
 	logic [1:0] fs, dir;
-	bit dStartTimer;
+	bit dcStartTimer;
 
 	clocking cb @(posedge clk);
 		output rst, u1, u2, d2, d3, f1, f2, f3, dc, fs;
@@ -33,6 +33,7 @@ module top;
 			 	.direction(elevatorif.dir));
 	//elevator_test Test1(elevatorif);
 	DoorSensor DSense(elevatorif);
+	FloorSensor FSense(elevatorif);
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
 	ButtonTest Test2(elevatorif, 2);
