@@ -14,7 +14,7 @@ interface elevator_if(input bit clk);
 		input door, dir;
 	endclocking
 endinterface
-
+/*
 module elevator_test(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
 								ClosingDoors2,
@@ -33,7 +33,7 @@ module elevator_test(elevator_if elevatorif);
 		p = new();
 		p.randomize();
 
-		/*** Test going up from floor 1 to floor 2 ***/
+		// Test going up from floor 1 to floor 2 
 
 		// init inputs
 		elevatorif.u1 <= 1'b0;
@@ -98,12 +98,13 @@ module elevator_test(elevator_if elevatorif);
 
 	end // initial
 
-endmodule
+endmodule */
 
-module DoorSensor(input bit startTimer, output logic DC);
-	int count;
-	always @(posedge startTimer) begin
-		$display("hello");
+
+module DoorSensor(elevator_if elevatorif);
+	always @(posedge elevatorif.dStartTimer) begin
+		repeat(10) @ elevatorif.cb;
+		elevatorif.dc <= 1'b1;
 	end
 
 endmodule
@@ -144,6 +145,8 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 			elevatorif.u1 <= 1'b1;
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u1 <= 1'b0;
+			@elevatorif.cb;
+			assert(E.state == Up1To2);
 		end else if( 1 == butIdx ) begin //On floor 2, press up
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u2 <= 1'b1;
@@ -200,7 +203,7 @@ module top;
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
 	//elevator_test Test1(elevatorif);
-	DoorSensor DSense(elevatorif.dStartTimer, elevatorif.dc);
+	DoorSensor DSense(elevatorif);
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
 	ButtonTest Test2(elevatorif, 2);
