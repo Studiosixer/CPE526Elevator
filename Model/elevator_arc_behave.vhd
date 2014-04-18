@@ -133,7 +133,7 @@ begin
 					end if;
 				when Up1To2 =>
 					if (FS = "10") then
-						if (F2 = '1' or U2 = '1') then
+						if (F2 = '1' or U2 = '1' or (D2 = '1' and D3 = '0')) then
 							state <= OpenedDoors2;
 							ENABLE <= '1';
 							door <= '0';
@@ -153,7 +153,7 @@ begin
 					end if;
 				when Down3To2 =>
 					if (FS = "10") then
-						if (F2 = '1' or D2 = '1') then
+						if (F2 = '1' or D2 = '1' or (U2 = '1' and U1 = '0')) then
 							state <= OpenedDoors2;
 							ENABLE <= '1';
 							door <= '0';
