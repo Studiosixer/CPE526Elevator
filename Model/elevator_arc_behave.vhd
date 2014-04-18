@@ -16,11 +16,11 @@ architecture behavioral of elevator is
 										 Down2To1);      -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType; -- the current state we're in
 	signal ZERO, ENABLE : std_logic; 		-- goes high when timer has reached zero
-	signal TEST : std_logic; 
 begin
 	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, ENABLE, ZERO);
 	process (clk, rst)
-		variable U1, U2, D2, D3, F1, F2, F3 : std_logic ;--:= '0';
+		variable U1, U2, D2, D3, F1, F2, F3 : std_logic := '0';
+		variable lastFloorVisited : stateType;
 	begin
 		if (rst = '1') then
 			state <= ClosingDoors1;
@@ -43,11 +43,9 @@ begin
 			end if;
 			if (DOWN2 = '1') then
 				D2 := '1';
-				TEST <= D2;
 			end if;
 			if (DOWN3 = '1') then
 				D3 := '1';
-				TEST <= D3;
 			end if;
 			if (FLOOR1 = '1') then
 				F1 := '1';
@@ -66,6 +64,7 @@ begin
 					F1 := '0';
 					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors1;
+						lastFloorVisited := ClosingDoors1;
 						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
@@ -76,6 +75,7 @@ begin
 					F2 := '0';
 					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
 						state <= ClosingDoors2;
+						--lastFloorVisited := ClosingDoors2;
 						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
@@ -85,6 +85,7 @@ begin
 					F3 := '0';
 					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
 						state <= ClosingDoors3;
+						lastFloorVisited := ClosingDoors3;
 						ENABLE <= '0';
 						door <= '1';
 						direction <= "00";
@@ -95,7 +96,8 @@ begin
 						ENABLE <= '1';
 						door <= '0';
 						direction <= "00";
-					elsif (DC = '1' and (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
+					elsif (DC = '1' and 
+                 (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1')) then
 						state <= Up1To2;
 						--ENABLE <= '0';
 						door <= '1';
@@ -108,8 +110,21 @@ begin
 						door <= '0';
 						direction <= "00";
 					elsif (DC = '1') then
-						ENABLE <= '0';
-						if (D3 = '1' or F3 = '1') then
+            ENABLE <= '0';
+						if ((U1 = '1' and D3 = '1') or 
+						    (U1 = '1' and F1 = '1') or 
+                (F1 = '1' and F3 = '1') or
+                (F1 = '1' and D3 = '1')) then
+							if (lastFloorVisited = ClosingDoors3) then
+								state <= Down2To1;
+								door <= '1';
+								direction <= "10";
+							else
+								state <= Up2To3;
+								door <= '1';
+								direction <= "01";						
+              end if;
+						elsif (D3 = '1' or F3 = '1') then
 							state <= Up2To3;
 							door <= '1';
 							direction <= "01";
@@ -133,7 +148,7 @@ begin
 					end if;
 				when Up1To2 =>
 					if (FS = "10") then
-						if (F2 = '1' or U2 = '1') then
+						if (F2 = '1' or U2 = '1' or (D2 = '1' and D3 = '0')) then
 							state <= OpenedDoors2;
 							ENABLE <= '1';
 							door <= '0';
@@ -153,7 +168,7 @@ begin
 					end if;
 				when Down3To2 =>
 					if (FS = "10") then
-						if (F2 = '1' or D2 = '1') then
+						if (F2 = '1' or D2 = '1' or (U2 = '1' and U1 = '0')) then
 							state <= OpenedDoors2;
 							ENABLE <= '1';
 							door <= '0';
