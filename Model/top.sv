@@ -11,7 +11,7 @@ interface elevator_if(input bit clk);
 	endclocking
 endinterface
 
-module top;
+module topTest1;
 	bit clk;
 
 	always #5 clk = ~clk;
@@ -31,7 +31,30 @@ module top;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	//elevator_test Test1(elevatorif);
+	elevator_test Test1(elevatorif);
+
+endmodule
+
+module topRandomTest;
+	bit clk;
+
+	always #5 clk = ~clk;
+
+	elevator_if elevatorif(clk);
+	elevator E(
+				.clk(clk),
+				.rst(elevatorif.rst),
+				.UP1(elevatorif.u1),
+				.UP2(elevatorif.u2),
+				.DOWN2(elevatorif.d2),
+				.DOWN3(elevatorif.d3),
+				.FLOOR1(elevatorif.f1),
+				.FLOOR2(elevatorif.f2),
+				.FLOOR3(elevatorif.f3),
+				.DC(elevatorif.dc),
+			 	.FS(elevatorif.fs),
+			 	.door(elevatorif.door),
+			 	.direction(elevatorif.dir));
 	DoorSensor DSense(elevatorif);
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
