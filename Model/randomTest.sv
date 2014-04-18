@@ -30,9 +30,6 @@ module elevator_test(elevator_if elevatorif);
 	initial
 	begin
 		p = new();
-		p.randomize();
-
-		/*** Test going up from floor 1 to floor 2 ***/
 
 		// init inputs
 		elevatorif.u1 <= 1'b0;
@@ -50,6 +47,9 @@ module elevator_test(elevator_if elevatorif);
 			@(elevatorif.cb);
 		elevatorif.rst <= 1'b0;
 		@(elevatorif.cb);
+
+		/*** Go up from floor 1 to floor 2 ***/
+		p.randomize();
 
 		// assert we're in initial state
 		assert(E.state == ClosingDoors1);
@@ -90,6 +90,75 @@ module elevator_test(elevator_if elevatorif);
 		repeat (p.travelTime)
 			@(elevatorif.cb);
 		elevatorif.fs <= 2'b10;
+		elevatorif.dc <= 1'b0;
+		@(elevatorif.cb);
+
+		assert(E.state == OpenedDoors2);
+		assert(elevatorif.door == 1'b0);
+		assert(elevatorif.dir == 2'b00);
+
+		/*** Go up from floor 2 to floor 3 ***/
+		p.randomize();
+
+		// floor 3 button pressed
+		elevatorif.f3 <= 1'b1;
+		repeat (p.bttnPressTime)
+			@(elevatorif.cb);
+		elevatorif.f3 <= 1'b0;
+
+		assert(E.state == ClosingDoors2);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b00);
+
+		// send doors closed (DC) signal
+		repeat (p.dcTime)
+			@(elevatorif.cb);
+		elevatorif.dc <= 1'b1;
+		@(elevatorif.cb);
+
+		assert(E.state == Up2To3);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b01);
+
+		// set floor sensor to level 3
+		repeat (p.travelTime)
+			@(elevatorif.cb);
+		elevatorif.fs <= 2'b11;
+		elevatorif.dc <= 1'b0;
+		@(elevatorif.cb);
+
+		assert(E.state == OpenedDoors3);
+		assert(elevatorif.door == 1'b0);
+		assert(elevatorif.dir == 2'b00);
+
+		/*** Go down from floor 3 to floor 2 ***/
+		p.randomize();
+
+		// floor 2 down button pressed
+		elevatorif.d2 <= 1'b1;
+		repeat (p.bttnPressTime)
+			@(elevatorif.cb);
+		elevatorif.d2 <= 1'b0;
+
+		assert(E.state == ClosingDoors3);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b00);
+
+		// send doors closed (DC) signal
+		repeat (p.dcTime)
+			@(elevatorif.cb);
+		elevatorif.dc <= 1'b1;
+		@(elevatorif.cb);
+
+		assert(E.state == Down3To2);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b10);
+
+		// set floor sensor to level 2
+		repeat (p.travelTime)
+			@(elevatorif.cb);
+		elevatorif.fs <= 2'b10;
+		elevatorif.dc <= 1'b0;
 		@(elevatorif.cb);
 
 		assert(E.state == OpenedDoors2);
@@ -189,7 +258,8 @@ module top;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	//elevator_test Test1(elevatorif);
+	elevator_test Test1(elevatorif);
+/*
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
 	ButtonTest Test2(elevatorif, 2);
@@ -197,5 +267,6 @@ module top;
 	ButtonTest Test4(elevatorif, 4);
 	ButtonTest Test5(elevatorif, 5);
 	ButtonTest Test6(elevatorif, 6);
+*/
 
 endmodule
