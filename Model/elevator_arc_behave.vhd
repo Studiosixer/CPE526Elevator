@@ -15,9 +15,9 @@ architecture behavioral of elevator is
 										 Down3To2,       -- Elevator is moving down from floor 3 to floor 2
 										 Down2To1);      -- Elevator is moving down from floor 2 to floor 1
 	signal state : stateType; -- the current state we're in
-	signal ZERO, ENABLE : std_logic; 		-- goes high when timer has reached zero
+	signal TIMER_EXPIRE, ENABLE : std_logic; 		-- goes high when timer has reached zero
 begin
-	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, ENABLE, ZERO);
+	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, ENABLE, TIMER_EXPIRE);
 	process (clk, rst)
 		variable U1, U2, D2, D3, F1, F2, F3 : std_logic := '0';
 		variable lastFloorVisited : stateType;
@@ -62,7 +62,7 @@ begin
 				when OpenedDoors1 =>
 					U1 := '0';
 					F1 := '0';
-					if (U2 = '1' or D2 = '1' or D3 = '1' or F2 = '1' or F3 = '1' or ZERO = '1') then
+					if (TIMER_EXPIRE = '1') then
 						state <= ClosingDoors1;
 						lastFloorVisited := ClosingDoors1;
 						ENABLE <= '0';
@@ -73,7 +73,7 @@ begin
 					U2 := '0';
 					D2 := '0';
 					F2 := '0';
-					if (U1 = '1' or D3 = '1' or F1 = '1' or F3 = '1' or ZERO = '1') then
+					if (TIMER_EXPIRE = '1') then
 						state <= ClosingDoors2;
 						--lastFloorVisited := ClosingDoors2;
 						ENABLE <= '0';
@@ -83,7 +83,7 @@ begin
 				when OpenedDoors3 =>
 					D3 := '0';
 					F3 := '0';
-					if (U1 = '1' or U2 = '1' or D2 = '1' or F1 = '1' or F2 = '1' or ZERO = '1') then
+					if (TIMER_EXPIRE = '1') then
 						state <= ClosingDoors3;
 						lastFloorVisited := ClosingDoors3;
 						ENABLE <= '0';
