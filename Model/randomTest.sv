@@ -7,6 +7,7 @@ import random::Packet;
 interface elevator_if(input bit clk);
 	logic rst, u1, u2, d2, d3, f1, f2, f3, dc, door;
 	logic [1:0] fs, dir;
+	bit dStartTimer;
 
 	clocking cb @(posedge clk);
 		output rst, u1, u2, d2, d3, f1, f2, f3, dc, fs;
@@ -39,7 +40,6 @@ module elevator_test(elevator_if elevatorif);
 		elevatorif.f1 <= 1'b0;
 		elevatorif.f2 <= 1'b0;
 		elevatorif.f3 <= 1'b0;
-		elevatorif.dc <= 1'b0;
 		elevatorif.fs <= 2'b01;
 		// reset device
 		elevatorif.rst <= 1'b1;
@@ -169,6 +169,14 @@ module elevator_test(elevator_if elevatorif);
 
 endmodule
 
+module DoorSensor(input bit startTimer, output logic DC);
+	int count;
+	always @(posedge startTimer) begin
+		$display("hello");
+	end
+
+endmodule
+
 program ButtonTest(elevator_if elevatorif, input int butIdx);
 	typedef enum {ClosingDoors1,
 						ClosingDoors2,
@@ -185,6 +193,7 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 	location loc;
 	Packet p;
 	initial begin
+
 		//p.randomize();
 		//$cast(loc, num); //
 		//Initialize inputs
@@ -241,6 +250,7 @@ endprogram  //end program ButtonTest
 
 module top;
 	bit clk;
+
 	always #5 clk = ~clk;
 
 	elevator_if elevatorif(clk);
@@ -258,8 +268,8 @@ module top;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	elevator_test Test1(elevatorif);
-/*
+	//elevator_test Test1(elevatorif);
+	DoorSensor DSense(elevatorif.dStartTimer, elevatorif.dc);
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
 	ButtonTest Test2(elevatorif, 2);
@@ -267,6 +277,5 @@ module top;
 	ButtonTest Test4(elevatorif, 4);
 	ButtonTest Test5(elevatorif, 5);
 	ButtonTest Test6(elevatorif, 6);
-*/
 
 endmodule
