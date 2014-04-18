@@ -1,5 +1,7 @@
 import random::Packet;
 
+const int DOOR_OPEN_TIME = 4;  // number of clock cycles the door stays open
+
 module elevator_test(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
 								ClosingDoors2,
@@ -26,6 +28,7 @@ module elevator_test(elevator_if elevatorif);
 		elevatorif.f2 <= 1'b0;
 		elevatorif.f3 <= 1'b0;
 		elevatorif.fs <= 2'b01;
+		elevatorif.dc <= 1'b1;
 		// reset device
 		elevatorif.rst <= 1'b1;
 		repeat (2)
@@ -33,7 +36,7 @@ module elevator_test(elevator_if elevatorif);
 		elevatorif.rst <= 1'b0;
 		@(elevatorif.cb);
 
-		//Go up from floor 1 to floor 2 
+		// Go up from floor 1 to floor 2 
 		p.randomize();
 
 		// assert we're in initial state
@@ -43,6 +46,7 @@ module elevator_test(elevator_if elevatorif);
 
 		// Up pressed on floor 1
 		elevatorif.u1 <= 1'b1;
+		elevatorif.dc <= 1'b0;
 		repeat (p.bttnPressTime)
 			@(elevatorif.cb);
 		elevatorif.u1 <= 1'b0;
@@ -56,6 +60,10 @@ module elevator_test(elevator_if elevatorif);
 		repeat (p.bttnPressTime)
 			@(elevatorif.cb);
 		elevatorif.f2 <= 1'b0;
+
+		// ensure timer has expired to put us in the closing doors state
+		repeat (DOOR_OPEN_TIME)
+			@(elevatorif.cb);
 
 		assert(E.state == ClosingDoors1);
 		assert(elevatorif.door == 1'b1);
@@ -82,7 +90,7 @@ module elevator_test(elevator_if elevatorif);
 		assert(elevatorif.door == 1'b0);
 		assert(elevatorif.dir == 2'b00);
 
-		// Go up from floor 2 to floor 3 
+		// Go up from floor 2 to floor 3
 		p.randomize();
 
 		// floor 3 button pressed
@@ -90,6 +98,10 @@ module elevator_test(elevator_if elevatorif);
 		repeat (p.bttnPressTime)
 			@(elevatorif.cb);
 		elevatorif.f3 <= 1'b0;
+
+		// ensure timer has expired to put us in the closing doors state
+		repeat (DOOR_OPEN_TIME)
+			@(elevatorif.cb);
 
 		assert(E.state == ClosingDoors2);
 		assert(elevatorif.door == 1'b1);
@@ -124,6 +136,10 @@ module elevator_test(elevator_if elevatorif);
 		repeat (p.bttnPressTime)
 			@(elevatorif.cb);
 		elevatorif.d2 <= 1'b0;
+
+		// ensure timer has expired to put us in the closing doors state
+		repeat (DOOR_OPEN_TIME)
+			@(elevatorif.cb);
 
 		assert(E.state == ClosingDoors3);
 		assert(elevatorif.door == 1'b1);
