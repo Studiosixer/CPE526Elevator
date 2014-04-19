@@ -17,8 +17,8 @@ architecture behavioral of elevator is
 	signal state : stateType; -- the current state we're in
 	signal TIMER_EXPIRE, ENABLE : std_logic; 		-- goes high when timer has reached zero
 begin
-	WAITFORINPUT: entity door_timer(BLAH) port map(rst, clk, ENABLE, TIMER_EXPIRE);
-	process (clk, rst)
+	DOORSOPENEDTIMER: entity door_timer(BEHAVE) port map(rst, clk, ENABLE, TIMER_EXPIRE);
+process (clk, rst)
 		variable U1, U2, D2, D3, F1, F2, F3 : std_logic := '0';
 		variable lastFloorVisited : stateType;
 	begin
@@ -67,6 +67,7 @@ begin
 						state <= ClosingDoors1;
 						lastFloorVisited := ClosingDoors1;
 						ENABLE <= '0';
+--						CLOSE <= '1';
 						door <= '1';
 						direction <= "00";
 					end if;
