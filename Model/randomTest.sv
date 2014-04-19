@@ -72,14 +72,7 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 	location loc;
 	Packet p;
 
-	//Whenever the door signal goes low, start closing the doors.
-	//always @(posedge E.door) elevatorif.dcStartTimer <= 1'b1;
-
 	initial begin
-
-		//p.randomize();
-		//$cast(loc, num); //
-		//Initialize inputs
 
 		p = new();
 
@@ -90,9 +83,9 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 		elevatorif.rst <= 1'b1;
 		@(elevatorif.cb)
 		elevatorif.rst <= 1'b0;
+		elevatorif.dc <= 1'b1;
 
 		if( 0 == butIdx ) begin				//On floor 1, press up
-			elevatorif.dc <= 1'b1;
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u1 <= 1'b1;
 			repeat (p.timeBeforePress) @ elevatorif.cb;
