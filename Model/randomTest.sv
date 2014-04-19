@@ -19,6 +19,7 @@ module VerificationManager(elevator_if elevatorif);
 								Down2To1} states;
 
 	FloorRequest floorReqQ[$];
+
 	//Triggered when floor 1 is requesting the elevator
 	always @(posedge elevatorif.u1, posedge elevatorif.f1) begin
 		automatic FloorRequest newReq = new();
@@ -39,7 +40,6 @@ module VerificationManager(elevator_if elevatorif);
 		automatic FloorRequest newReq = new();
 		newReq.floor = 2;
 		floorReqQ.push_front(newReq);
-
 		case (elevatorif.fs)
 			2'b01 : $display($time, " Floor 2 requested. Request Pending... Currently on floor 1");
 			2'b10 : begin
@@ -54,6 +54,7 @@ module VerificationManager(elevator_if elevatorif);
 	always @(posedge elevatorif.d3, posedge elevatorif.f3) begin
 		automatic FloorRequest newReq = new();
 		newReq.floor = 3;
+		floorReqQ.push_front(newReq);
 		case (elevatorif.fs)
 			2'b01 : $display($time, " Floor 3 requested. Request Pending... Currently on floor 1");
 			2'b10 : $display($time, " Floor 3 requested. Request Pending... Currently on floor 2");
@@ -64,8 +65,39 @@ module VerificationManager(elevator_if elevatorif);
 		endcase
 	end //always @(posedge floor3Requested)
 
+
+	//---------------Triggered on the state change-------
 	always @(E.state) begin
-		$display("%d", floorReqQ.size());
+		case (E.state)
+			OpenedDoors1 : begin
+			//Loop through to queue find a requeset for floor 1 and delete.
+			for (int i = 0; i < floorReqQ.size(); i++) begin
+				if (floorReqQ[i].floor == 1) begin
+				floorReqQ.delete(i);
+				$display("Request on floor 1 accepted");
+				end
+				end
+			end// Opened doors1
+
+			OpenedDoors2 : begin
+			for (int i = 0; i < floorReqQ.size(); i++) begin
+				if (floorReqQ[i].floor == 2) begin
+				floorReqQ.delete(i);
+				$display("Request on floor 2 accepted");
+				end	
+				end
+			end// Opened doors2
+
+			OpenedDoors3 : begin
+			for (int i = 0; i < floorReqQ.size(); i++) begin
+				if (floorReqQ[i].floor == 3) begin
+				floorReqQ.delete(i);
+				$display("Request on floor 3 accepted");
+				end
+				end
+			end// Opened doors3
+
+		endcase
 	end //always @E.state
 
 endmodule //VerificationManager
