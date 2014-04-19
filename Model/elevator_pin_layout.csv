@@ -1,0 +1,36 @@
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+
+# Quartus II 32-bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Full Version
+# File: C:\Documents and Settings\tb0036\Desktop\elevator_pin_layout.csv
+# Generated on: Sat Apr 19 16:35:17 2014
+
+# Note: The column header names should not be changed if you wish to import this .csv file into the Quartus II software.
+
+To,Direction,Location,I/O Bank,VREF Group,Fitter Location,I/O Standard,Reserved,Current Strength,Differential Pair
+clk,Input,PIN_N2,2,B2_N1,PIN_N2,,,,
+DC,Input,PIN_B13,4,B4_N1,PIN_B13,,,,
+direction[1],Output,PIN_AF23,7,B7_N0,PIN_AF23,,,,
+direction[0],Output,PIN_AE23,7,B7_N0,PIN_AE23,,,,
+door,Output,PIN_Y18,7,B7_N0,PIN_Y18,,,,
+DOWN2,Input,PIN_V1,1,B1_N0,PIN_V1,,,,
+DOWN3,Input,PIN_U3,1,B1_N0,PIN_U3,,,,
+FLOOR1,Input,PIN_T7,1,B1_N0,PIN_T7,,,,
+FLOOR2,Input,PIN_P2,1,B1_N0,PIN_P2,,,,
+FLOOR3,Input,PIN_P1,1,B1_N0,PIN_P1,,,,
+FS[1],Input,PIN_N1,2,B2_N1,PIN_N1,,,,
+FS[0],Input,PIN_A13,4,B4_N1,PIN_A13,,,,
+rst,Input,PIN_N25,5,B5_N1,PIN_N25,,,,
+UP1,Input,PIN_V2,1,B1_N0,PIN_V2,,,,
+UP2,Input,PIN_U4,1,B1_N0,PIN_U4,,,,
