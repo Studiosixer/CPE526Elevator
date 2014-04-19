@@ -1,8 +1,13 @@
+// Elevator Controller
+// CPE 526
+// Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
+
 import random::Packet;
 
-const int DOOR_OPEN_TIME = 4;  // number of clock cycles the door stays open
+const int DOOR_OPEN_TIME = 5;  // number of clock cycles the door stays open
 
-module elevator_test(elevator_if elevatorif);
+// run through all states
+program statesTest(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
 								ClosingDoors2,
 								ClosingDoors3,
@@ -128,7 +133,7 @@ module elevator_test(elevator_if elevatorif);
 		assert(elevatorif.door == 1'b0);
 		assert(elevatorif.dir == 2'b00);
 
-		// Go down from floor 3 to floor 2 
+		// Go down from floor 3 to floor 2
 		p.randomize();
 
 		// floor 2 down button pressed
@@ -166,6 +171,59 @@ module elevator_test(elevator_if elevatorif);
 		assert(elevatorif.door == 1'b0);
 		assert(elevatorif.dir == 2'b00);
 
+		// Go down from floor 2 to floor 1
+		p.randomize();
+
+		// floor 1 button pressed
+		elevatorif.f1 <= 1'b1;
+		repeat (p.bttnPressTime)
+			@(elevatorif.cb);
+		elevatorif.f1 <= 1'b0;
+
+		// ensure timer has expired to put us in the closing doors state
+		repeat (DOOR_OPEN_TIME)
+			@(elevatorif.cb);
+
+		assert(E.state == ClosingDoors2);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b00);
+
+		// send doors closed (DC) signal
+		repeat (p.dcTime)
+			@(elevatorif.cb);
+		elevatorif.dc <= 1'b1;
+		@(elevatorif.cb);
+
+		assert(E.state == Down2To1);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b10);
+
+		// set floor sensor to level 2
+		repeat (p.travelTime)
+			@(elevatorif.cb);
+		elevatorif.fs <= 2'b01;
+		elevatorif.dc <= 1'b0;
+		@(elevatorif.cb);
+
+		assert(E.state == OpenedDoors1);
+		assert(elevatorif.door == 1'b0);
+		assert(elevatorif.dir == 2'b00);
+
+		// Ensure we go back to the doors closed state and stay there
+		repeat (DOOR_OPEN_TIME)
+			@(elevatorif.cb);
+
+		assert(E.state == ClosingDoors1);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b00);
+
+		repeat (10)
+			@(elevatorif.cb);
+
+		assert(E.state == ClosingDoors1);
+		assert(elevatorif.door == 1'b1);
+		assert(elevatorif.dir == 2'b00);
+
 	end // initial
 
-endmodule 
+endprogram : statesTest
