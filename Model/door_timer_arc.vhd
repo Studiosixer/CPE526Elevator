@@ -5,7 +5,7 @@
 Library IEEE;
 use ieee.std_logic_1164.all;
 
-architecture BLAH of door_timer is
+architecture BEHAVE of door_timer is
 begin
 	process (RESET, CLK, ENABLE)
 		variable TIMER : integer range 0 to 4;--60;
@@ -25,4 +25,4 @@ begin
 			end if;
 		end if;
 	end process;
-end BLAH;
+end BEHAVE;
