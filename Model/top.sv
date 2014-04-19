@@ -31,7 +31,7 @@ module topTest1;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	elevator_test Test1(elevatorif);
+	statesTest t0(elevatorif);
 
 endmodule
 
