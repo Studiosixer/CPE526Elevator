@@ -15,7 +15,6 @@ package random;
 
 		typedef enum {U1, U2, D2, D3, F1, F2, F3} buttons;
 		randc buttons b;
-		rand int buttonSelector;
 
 	endclass : Packet
 endpackage : random

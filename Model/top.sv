@@ -31,7 +31,7 @@ module topTest1;
 			 	.FS(elevatorif.fs),
 			 	.door(elevatorif.door),
 			 	.direction(elevatorif.dir));
-	elevator_test Test1(elevatorif);
+	statesTest t0(elevatorif);
 
 endmodule
 
@@ -57,6 +57,8 @@ module topRandomTest;
 			 	.direction(elevatorif.dir));
 	DoorSensor DSense(elevatorif);
 	FloorSensor FSense(elevatorif);
+	VerificationManager VM(elevatorif);
+
 	ButtonTest Test0(elevatorif, 0);
 	ButtonTest Test1(elevatorif, 1);
 	ButtonTest Test2(elevatorif, 2);
