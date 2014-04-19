@@ -3,9 +3,68 @@
 // Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
 import random::Packet;
 
-//The door sensor module waits for a change of the state of the elevator.
-//If the door is in a closing state, the elevator waits for 2 cycles and sets
-//DC high. Otherwise, DC will be low.
+//-------------------------------------------------
+//						Verification Manager Module
+//-------------------------------------------------
+module VerificationManager(elevator_if elevatorif);
+	typedef enum {ClosingDoors1,
+								ClosingDoors2,
+								ClosingDoors3,
+								OpenedDoors1,
+								OpenedDoors2,
+								OpenedDoors3,
+								Up1To2,
+								Up2To3,
+								Down3To2,
+								Down2To1} states;
+	bit floor1Requested = 1'b0;
+	bit floor2Requested = 1'b0;
+	bit floor3Requested = 1'b0;
+	
+//	initial begin
+//		$display("Elevator @  |  Floor Requested  |  Current State");
+//		$display("------------------------------------------------");
+//	end
+
+	always @elevatorif.cb begin
+		//If the elevator needs to go to floor 1
+		if(elevatorif.u1 == 1'b1 || elevatorif.f1 == 1'b1) begin
+			floor1Requested <= 1'b1;
+		end
+		//If the elevator needs to go to floor 2
+		if(elevatorif.u2 == 1'b1 || elevatorif.f2 == 1'b1 || elevatorif.d2 == 1'b1) begin
+			floor2Requested <= 1'b1;
+		end
+		//If the elevator needs to go to floor 3
+		if(elevatorif.d3 == 1'b1 || elevatorif.f3 == 1'b1) begin
+			floor3Requested <= 1'b1;
+		end
+	end //always @elevatorif.cb
+
+	always @(posedge elevatorif.u1) begin
+		case (elevatorif.fs)
+			2'b01 : $display("Floor 1 requested. Accepted!");
+			2'b10 : $display("Floor 1 requested. Request Pending...");
+			2'b11 : $display("Floor 1 requested. Request Pending...");
+		endcase
+
+//		if (elevatorif.fs == 2'b01) begin
+//			$display("Floor 1 requested. Accepted!");
+//		end
+//		if (elevatorif.fs == 2'b10) begin
+//			$display("Floor 1 requested. Request pending...");
+//		end
+	end //always @(posedge floor1Requested)
+
+endmodule //VerificationManager
+
+
+//---------------------------------------
+//			Door Sensor Module
+//---------------------------------------
+//The door sensor module is triggered on every edge of the door output from the elevator.
+//If the statsis and Opened Doors state, DC goes low. Otherwise, we wait a few clockcycles
+//and set DC high. This is a psuedo "sensor" for the dooe.
 module DoorSensor(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
 								ClosingDoors2,
@@ -17,7 +76,7 @@ module DoorSensor(elevator_if elevatorif);
 								Up2To3,
 								Down3To2,
 								Down2To1} states;
-	always @(edge E.door) begin
+	always @(edge E.door) begin //Triggered at every edge
 		if( (E.state == OpenedDoors1) || (E.state == OpenedDoors2) || (E.state == OpenedDoors3) ) begin
 			elevatorif.dc <= 1'b0;
 		end
@@ -28,9 +87,11 @@ module DoorSensor(elevator_if elevatorif);
 		end
 	end
 
-endmodule
+endmodule //Door sensor
 
-
+//-----------------------------------------
+//				Floor Sensor Module
+//-----------------------------------------
 module FloorSensor(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
 								ClosingDoors2,
@@ -55,7 +116,11 @@ module FloorSensor(elevator_if elevatorif);
 		end
 	end
 
-endmodule
+endmodule //Floor sensor
+
+//-----------------------------------------------------------
+//									Button Test Program
+//-----------------------------------------------------------
 program ButtonTest(elevator_if elevatorif, input int butIdx);
 	typedef enum {ClosingDoors1,
 						ClosingDoors2,
@@ -73,6 +138,13 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 	Packet p;
 
 	initial begin
+	elevatorif.u1 <= 1'b0;
+	elevatorif.u2 <= 1'b0;
+	elevatorif.d2 <= 1'b0;
+	elevatorif.d3 <= 1'b0;
+	elevatorif.f1 <= 1'b0;
+	elevatorif.f2 <= 1'b0;
+	elevatorif.f3 <= 1'b0;
 
 		p = new();
 
@@ -83,46 +155,44 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 		elevatorif.rst <= 1'b1;
 		@(elevatorif.cb)
 		elevatorif.rst <= 1'b0;
-		elevatorif.dc <= 1'b1;
+		elevatorif.dc <= 1'b0;
 
 		if( 0 == butIdx ) begin				//On floor 1, press up
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u1 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.u1 <= 1'b0;
  		end else if( 1 == butIdx ) begin //On floor 2, press up
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u2 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.u2 <= 1'b0;
 		end else if( 2 == butIdx ) begin //On floor 2, press down
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.d2 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.d2 <= 1'b0;
 		end else if( 3 == butIdx ) begin //On floor 3, press down
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.d3 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.d3 <= 1'b0;
 		end else if( 4 == butIdx ) begin //In elevator, press 1
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.f1 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.f1 <= 1'b0;
 		end else if( 5 == butIdx ) begin //In elevator, press 2
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.f2 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.f2 <= 1'b0;
 		end else if( 6 == butIdx ) begin //In elevator, press 3
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.f3 <= 1'b1;
-			repeat (p.timeBeforePress) @ elevatorif.cb;
+			repeat (p.bttnPressTime) @ elevatorif.cb;
 			elevatorif.f3 <= 1'b0;
 		end	// if 1 == butIdx
 
 	end //End initial begin
 endprogram  //end program ButtonTest
-
-
