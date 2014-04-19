@@ -1,7 +1,7 @@
 // randomTest.sv
 // CPE 526
 // Taixing Bi (Hunter), Wesley Eledui, Justin Gay, John Wilkes
-import random::Packet;
+import random::*;
 
 //-------------------------------------------------
 //						Verification Manager Module
@@ -17,44 +17,56 @@ module VerificationManager(elevator_if elevatorif);
 								Up2To3,
 								Down3To2,
 								Down2To1} states;
-	bit floor1Requested = 1'b0;
-	bit floor2Requested = 1'b0;
-	bit floor3Requested = 1'b0;
-	
-//	initial begin
-//		$display("Elevator @  |  Floor Requested  |  Current State");
-//		$display("------------------------------------------------");
-//	end
 
-	always @elevatorif.cb begin
-		//If the elevator needs to go to floor 1
-		if(elevatorif.u1 == 1'b1 || elevatorif.f1 == 1'b1) begin
-			floor1Requested <= 1'b1;
-		end
-		//If the elevator needs to go to floor 2
-		if(elevatorif.u2 == 1'b1 || elevatorif.f2 == 1'b1 || elevatorif.d2 == 1'b1) begin
-			floor2Requested <= 1'b1;
-		end
-		//If the elevator needs to go to floor 3
-		if(elevatorif.d3 == 1'b1 || elevatorif.f3 == 1'b1) begin
-			floor3Requested <= 1'b1;
-		end
-	end //always @elevatorif.cb
-
-	always @(posedge elevatorif.u1) begin
+	FloorRequest floorReqQ[$];
+	//Triggered when floor 1 is requesting the elevator
+	always @(posedge elevatorif.u1, posedge elevatorif.f1) begin
+		automatic FloorRequest newReq = new();
+		newReq.floor = 1;
+		floorReqQ.push_front(newReq);
 		case (elevatorif.fs)
-			2'b01 : $display("Floor 1 requested. Accepted!");
-			2'b10 : $display("Floor 1 requested. Request Pending...");
-			2'b11 : $display("Floor 1 requested. Request Pending...");
-		endcase
-
-//		if (elevatorif.fs == 2'b01) begin
-//			$display("Floor 1 requested. Accepted!");
-//		end
-//		if (elevatorif.fs == 2'b10) begin
-//			$display("Floor 1 requested. Request pending...");
-//		end
+			2'b01 : begin
+							$display($time, " Floor 1 requested. Accepted!");
+							floorReqQ.pop_front();
+							end
+			2'b10 : $display($time, " Floor 1 requested. Request Pending... Currently on floor 2");
+			2'b11 : $display($time, " Floor 1 requested. Request Pending... Currently on floor 3");
+		endcase 
 	end //always @(posedge floor1Requested)
+
+	//Triggered when floor 2 is requesting the elevator
+	always @(posedge elevatorif.u2, posedge elevatorif.f2, posedge elevatorif.d2) begin
+		automatic FloorRequest newReq = new();
+		newReq.floor = 2;
+		floorReqQ.push_front(newReq);
+
+		case (elevatorif.fs)
+			2'b01 : $display($time, " Floor 2 requested. Request Pending... Currently on floor 1");
+			2'b10 : begin
+							$display($time, " Floor 2 requested. Accepted!");
+							floorReqQ.pop_front();
+							end
+			2'b11 : $display($time, " Floor 2 requested. Request Pending... Currently on floor 3");
+		endcase
+	end //always @(posedge floor2Requested)
+
+	//Triggered when floor 3 is requesting the elevator
+	always @(posedge elevatorif.d3, posedge elevatorif.f3) begin
+		automatic FloorRequest newReq = new();
+		newReq.floor = 3;
+		case (elevatorif.fs)
+			2'b01 : $display($time, " Floor 3 requested. Request Pending... Currently on floor 1");
+			2'b10 : $display($time, " Floor 3 requested. Request Pending... Currently on floor 2");
+			2'b11 : begin
+							$display($time, " Floor 3 requested. Accepted!");
+							floorReqQ.pop_front();
+							end
+		endcase
+	end //always @(posedge floor3Requested)
+
+	always @(E.state) begin
+		$display("%d", floorReqQ.size());
+	end //always @E.state
 
 endmodule //VerificationManager
 
@@ -103,6 +115,7 @@ module FloorSensor(elevator_if elevatorif);
 								Up2To3,
 								Down3To2,
 								Down2To1} states;
+	initial elevatorif.fs = 2'b01;
 	always @(E.state) begin
 		if ( (E.state == Up1To2) || (E.state == Down3To2) ) begin
 			repeat(2) @ elevatorif.cb;

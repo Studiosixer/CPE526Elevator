@@ -17,4 +17,25 @@ package random;
 		randc buttons b;
 
 	endclass : Packet
+
+	class FloorRequest;
+		int floor;
+	endclass : FloorRequest
+
+/*//	//A queue to process floor requests
+//	class FloorRequestQueue;
+//		FloorRequest firstRequest;
+//		FloorRequest lastRequest;
+//		
+//		function void AddRequest(FloorRequest newRequest);
+//			lastRequest.next = newRequest;
+//			lastRequest = newRequest;
+//		endfunction : AddRequest
+//
+		function bit isEmpty();
+			if(FloorRequest
+		endfunction : isEmpty
+
+	endclass : FloorRequestQueue*/
+
 endpackage : random
