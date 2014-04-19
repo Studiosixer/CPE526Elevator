@@ -4,7 +4,7 @@
 import random::Packet;
 
 //The door sensor module waits for a change of the state of the elevator.
-//If the door is in a closing state, the elevator waits for 5 cycles and sets
+//If the door is in a closing state, the elevator waits for 2 cycles and sets
 //DC high. Otherwise, DC will be low.
 module DoorSensor(elevator_if elevatorif);
 	typedef enum {ClosingDoors1,
@@ -17,12 +17,14 @@ module DoorSensor(elevator_if elevatorif);
 								Up2To3,
 								Down3To2,
 								Down2To1} states;
-	always @(E.state) begin
-		if ((E.state == ClosingDoors1) || (E.state == ClosingDoors2) || (E.state == ClosingDoors3)) begin
-			repeat(5) @ elevatorif.cb;
-			elevatorif.dc <= 1'b1;
-		end else begin
+	always @(edge E.door) begin
+		if( (E.state == OpenedDoors1) || (E.state == OpenedDoors2) || (E.state == OpenedDoors3) ) begin
 			elevatorif.dc <= 1'b0;
+		end
+
+		repeat(2) @elevatorif.cb;
+		if ((E.state == ClosingDoors1) || (E.state == ClosingDoors2) || (E.state == ClosingDoors3)) begin
+			elevatorif.dc <= 1'b1;
 		end
 	end
 
@@ -69,6 +71,10 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 	typedef enum {FIRST, SECOND, THIRD, IN_ELEV} location;
 	location loc;
 	Packet p;
+
+	//Whenever the door signal goes low, start closing the doors.
+	//always @(posedge E.door) elevatorif.dcStartTimer <= 1'b1;
+
 	initial begin
 
 		//p.randomize();
@@ -86,7 +92,6 @@ program ButtonTest(elevator_if elevatorif, input int butIdx);
 		elevatorif.rst <= 1'b0;
 
 		if( 0 == butIdx ) begin				//On floor 1, press up
-			elevatorif.dcStartTimer <= 1'b1;
 			elevatorif.dc <= 1'b1;
 			repeat (p.timeBeforePress) @ elevatorif.cb;
 			elevatorif.u1 <= 1'b1;

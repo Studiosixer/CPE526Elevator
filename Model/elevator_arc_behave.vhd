@@ -33,6 +33,7 @@ begin
 			F1 := '0';
 			F2 := '0';
 			F3 := '0';
+			ENABLE <= '0';
 		elsif (clk'event and clk = '1') then
 			-- latch button inputs when pressed
 			if (UP1 = '1') then
