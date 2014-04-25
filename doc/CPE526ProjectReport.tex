@@ -472,7 +472,7 @@ The abstract goes here.
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-IEEEtran, journal, \LaTeX, paper, template.
+elevator, controller.
 \end{IEEEkeywords}
 
 
@@ -508,25 +508,22 @@ IEEEtran, journal, \LaTeX, paper, template.
 % 
 % Here we have the typical use of a "T" for an initial drop letter
 % and "HIS" in caps to complete the first word.
-\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
-for IEEE journal papers produced under \LaTeX\ using
-IEEEtran.cls version 1.7 and later.
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
-I wish you the best of success.
+\IEEEPARstart{T}{his} model is a controller for an elevator that services three floors. It has nine inputs and two outputs. There are four external buttons: one on the first floor to request to go up, two on the second floor to request to go up and down, and one on the third floor to request to go down. There are also three buttons internal to the elevator to request to go to each floor. The elevator uses two sensors. The first is a door sensor. This is used to ensure that the elevator doors have closed before moving to another floor. The input is 0 when the doors are open and 1 when the doors have closed. The second sensor is a floor sensor. This input informs the controller when the elevator has arrived at a new floor. It is a two-bit value that indicates the floor the elevator is currently on (01$_{2}$ – floor 1, 10$_{2}$ – floor 2, 11$_{2}$ – floor 3). The two outputs of the elevator controller are door controller and elevator direction signals. The door controller sets whether the door is open or closed. When it is 0, the doors open, and when it is 1, the doors close. The elevator direction output is a two-bit value that controls the direction in which the elevator is traveling. A value of 00$_{2}$ keeps the elevator stationary, 01$_{2}$ moves the elevator up, and 10$_{2}$ moves the elevator down.
 
-\hfill mds
+%\hfill mds
  
-\hfill January 11, 2007
+%\hfill January 11, 2007
 
-\subsection{Subsection Heading Here}
-Subsection text here.
+%\subsection{Subsection Heading Here}
+%Subsection text here.
 
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
+%\subsubsection{Subsubsection Heading Here}
+%Subsubsection text here.
 
 
 % An example of a floating figure using the graphicx package.
