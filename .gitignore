@@ -7,3 +7,10 @@ Model/work/*
 *.mpf
 *.wlf
 transcript
+
+# Latex generation files
+doc/*.aux
+doc/*.dvi
+doc/*.log
+doc/*.pdf
+
