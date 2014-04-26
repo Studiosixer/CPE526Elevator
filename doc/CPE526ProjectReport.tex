@@ -125,6 +125,10 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+\DeclareGraphicsExtensions{.png}
+
 \ifCLASSINFOpdf
   % \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
@@ -607,6 +611,15 @@ elevator, controller.
 % Note that, LaTeX2e, unlike IEEE journals, places footnotes above bottom
 % floats. This can be corrected via the \fnbelowfloat command of the
 % stfloats package.
+
+
+% State Diagram Figure
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{ElevatorStateMachine}
+\caption{State Diagram}
+\label{fig_state_machine}
+\end{figure*}
 
 \section{Implementation Approach}
 The elevator controller is composed of two architectures. The main architecture is the state machine. 
