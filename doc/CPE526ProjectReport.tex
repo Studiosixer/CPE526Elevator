@@ -128,7 +128,7 @@
 %
 \usepackage{graphicx}
 \graphicspath{{./figures/}}
-\DeclareGraphicsExtensions{.png}
+\DeclareGraphicsExtensions{.png,.jpg}
 
 \ifCLASSINFOpdf
   % \usepackage[pdftex]{graphicx}
@@ -672,19 +672,19 @@ One of the drawbacks to using the VHDL test bench to verify our elevator control
 
 \subsection{Random Testing}
 
+% Random Button Press Figure
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{RandomButtonTestWaveform}
+\caption{Random Button Press Waveform}
+\label{bttn_press_waveform}
+\end{figure*}
+
 \subsubsection{Goals}
-In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Below is a waveform of the button signals being set high randomly.
+In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Figure \ref{bttn_press_waveform} is a waveform of the button signals being set high randomly.
 
 \subsubsection{Implementation}
-In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Below is a waveform of the button signals being set high randomly.
-
-% Random Button Press Figure
-%\begin{figure*}[t]
-%\centering
-%\includegraphics[width=0.9\linewidth]{}
-%\caption{State Diagram}
-%\label{fig_state_machine}
-%\end{figure*}
+In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Figure \ref{bttn_press_waveform} is a waveform of the button signals being set high randomly.
 
 \subsubsection{External Modules}
 The elevator requires the use of the two sensors mentioned earlier, the floor sensor and the doors closed sensor. Both of these were instantiated in the system verilog test and used to supply their respective signals to the system. These modules, in an actual implementation, would read what floor the elevator was at or read when the doors had been closed. These system verilog modules were designed to simply act like timers. When triggered, either module will wait a specified number of clock cycles and assert it’s appropriate signal. This wait is supposed to emulate the time before a sensor is triggered. In fact, one of the initial, directed system verilog test actually randomizes the wait before the floor sensor’s assertion as it walks through the elevator states. But the primary system verilog test did not do randomization to the floor sensor/door closed waits.
@@ -709,7 +709,7 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \label{altera_configuration}
 \end{figure}
 
-The state machine below, figure 3, shows the state-to-state transitions for the test case used during the demonstration on the Altera DE-II. 
+The state machine below, figure \ref{synth_state_machine}, shows the state-to-state transitions for the test case used during the demonstration on the Altera DE-II. 
 
 % Synth State Machine
 \begin{figure}[h]
@@ -719,7 +719,7 @@ The state machine below, figure 3, shows the state-to-state transitions for the 
 \label{synth_state_machine}
 \end{figure}
 
-Figure 4 shows the start of the synthesis demonstration with RST high. When RST is high, the outputs door and direction are 1 and 00$_{2}$, respectively. 
+Figure \ref{reset} shows the start of the synthesis demonstration with RST high. When RST is high, the outputs door and direction are 1 and 00$_{2}$, respectively. 
 
 % Reset
 \begin{figure}[h]
@@ -729,7 +729,7 @@ Figure 4 shows the start of the synthesis demonstration with RST high. When RST 
 \label{reset}
 \end{figure}
 
-Figure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set high and the elevator transitions to the Up1To2 state. The inputs are latched meaning it is not required to keep F2 or DC high for the duration of the Up1To2 state. The outputs door and direction are 1 and 01$_{2}$, respectively. 
+Figure \ref{up1to2} shows the transition to the Up1To2 state. The inputs F2 and DC are set high and the elevator transitions to the Up1To2 state. The inputs are latched meaning it is not required to keep F2 or DC high for the duration of the Up1To2 state. The outputs door and direction are 1 and 01$_{2}$, respectively. 
 
 % Up1To2
 \begin{figure}[h]
@@ -739,7 +739,7 @@ Figure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set 
 \label{up1to2}
 \end{figure}
 
-When the Floor Sensor (FS) input is 10$_{2}$, the elevator will transition to the OpenedDoors2 state, and the outputs door and direction will be 0 and 00$_{2}$, respectively. It is not shown in figure 6, but the LED representing the door output actually went off for a few clock cycles. Once the input at floor 2 is recognized the door output of the elevator is high. 
+When the Floor Sensor (FS) input is 10$_{2}$, the elevator will transition to the OpenedDoors2 state, and the outputs door and direction will be 0 and 00$_{2}$, respectively. It is not shown in figure \ref{floor2}, but the LED representing the door output actually went off for a few clock cycles. Once the input at floor 2 is recognized the door output of the elevator is high. 
 
 % Floor2
 \begin{figure}[h]
@@ -749,7 +749,7 @@ When the Floor Sensor (FS) input is 10$_{2}$, the elevator will transition to th
 \label{floor2}
 \end{figure}
 
-Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and direction are 1 and 01$_{2}$, respectively. 
+Figure \ref{up2to3} shows the request on floor 2 to go to floor 3 and the outputs door and direction are 1 and 01$_{2}$, respectively. 
 
 % Up2To3
 \begin{figure}[h]
@@ -759,7 +759,7 @@ Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and 
 \label{up2to3}
 \end{figure}
 
-Figure 8 shows the final state of the elevator travelling from floor 3 down to floor 2. The outputs door and direction are 1 and 10$_{2}$, respectively, for this case.
+Figure \ref{down3to2} shows the final state of the elevator travelling from floor 3 down to floor 2. The outputs door and direction are 1 and 10$_{2}$, respectively, for this case.
 
 % Down3To2
 \begin{figure}[h]
