@@ -70,7 +70,8 @@
 % \documentclass[journal]{../sty/IEEEtran}
 
 
-
+% *** Source Code ***
+\usepackage{listings}
 
 
 % Some very useful LaTeX packages include:
@@ -698,7 +699,7 @@ When a request for a floor is made, the request is placed in a queue and the sta
 On every state change, the queue is searched for pending requests that could be accepted (based on the new state) and will print out a confirmation statement when the request has been accepted i.e. the requested floor has been reached and the request is deleted from the queue.
 
 \section{Synthesis}
-The elevator controller model was synthesized using Quartus II with the Cyclone II FPGA  on a Altera test board. The layout of the elevator controller model on the Altera test board in shown in the figure below. The inputs U1, U2, D2, D3, F1, F2, F3, FS, DC and Reset (RST) are controlled with switches as seen in the figure below. The outputs of the elevator controller, door and direction, were configured as LEDs. The seven segment display was not used during synthesis. 
+The elevator controller model was synthesized using Quartus II with the Cyclone II FPGA  on a Altera DE-II test board. The layout of the elevator controller model on the Altera test board in shown in the figure below. The inputs U1, U2, D2, D3, F1, F2, F3, FS, DC and Reset (RST) are controlled with switches as seen in the figure below. The outputs of the elevator controller, door and direction, were configured as LEDs. The seven segment display was not used during synthesis. 
 
 % Altera Configuration
 \begin{figure}[h]
@@ -708,13 +709,17 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \label{altera_configuration}
 \end{figure}
 
+The state machine below, figure 3, shows the state-to-state transitions for the test case used during the demonstration on the Altera DE-II. 
+
 % Synth State Machine
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{Synth_State_Machine.jpg}
-\caption{Add Caption.}
+\caption{Synthesis Test Case Demonstration.}
 \label{synth_state_machine}
 \end{figure}
+
+Figue 4 shows the start of the synthesis demonstration with RST high. When RST is high the outputs door and direction are 1 and 00, respectively. 
 
 % Reset
 \begin{figure}[h]
@@ -724,6 +729,8 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \label{reset}
 \end{figure}
 
+FIgure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set high and the elevator transitions to the Up1To2 state. The inputs are latched meaning it is not required to keep F2 or DC high for the duration of the Up1To2 state. The outputs door and direction are 1 and 01, respectively. 
+
 % Up1To2
 \begin{figure}[h]
 \centering
@@ -731,6 +738,8 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \caption{Up1To2 State on Altera board.}
 \label{up1to2}
 \end{figure}
+
+When the Floor Sensor (FS) inputs are 10 the elevator will transition to the OpenedDoors2 state and the outputs door and direction will be 0 and 00, respectively. It is not shown in figure 6 but the LED representing the door output actually went off for a few clock cycles. Once the input at floor 2 is recognized the door output of the elevator is high. 
 
 % Floor2
 \begin{figure}[h]
@@ -740,6 +749,8 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \label{floor2}
 \end{figure}
 
+Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and direction are 1 and 01, respectively. 
+
 % Up2To3
 \begin{figure}[h]
 \centering
@@ -747,6 +758,8 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \caption{Up2To3 State on Altera board.}
 \label{up2to3}
 \end{figure}
+
+Figure 8 shows the final state of the elevator travelling from floor 3 down to floor 2. The outputs door and direction are 1 and 10, respectively, for this case.
 
 % Down3To2
 \begin{figure}[h]
@@ -757,7 +770,7 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 \end{figure}
 
 \section{Conclusions}
-
+Add conclusions here.
 
 
 
@@ -777,28 +790,42 @@ The elevator controller model was synthesized using Quartus II with the Cyclone 
 %
 
 
+
+\newpage
 \appendices
+\onecolumn
 \section{Model}
-*Insert model here.*
+\lstset{basicstyle=\footnotesize,breaklines=true,breakatwhitespace=false, tabsize=2, caption=\lstname}
+\lstinputlisting[language=VHDL]{../Model/elevator_entity.vhd}
+\lstinputlisting[language=VHDL]{../Model/elevator_arc_behave.vhd}
+\lstinputlisting[language=VHDL]{../Model/door_timer_entity.vhd}
+\lstinputlisting[language=VHDL]{../Model/door_timer_arc.vhd}
+\lstinputlisting[language=VHDL]{../Model/door_sensor_entity.vhd}
+\lstinputlisting[language=VHDL]{../Model/door_sensor_arc_behave.vhd}
+\lstinputlisting[language=VHDL]{../Model/Elevator_TB.vhd}
+\lstinputlisting[language=VHDL]{../Model/elevatorInput_NEW.txt}
+\lstinputlisting[language=Verilog]{../Model/randomPacket.sv}
+\lstinputlisting[language=Verilog]{../Model/randomTest.sv}
+\lstinputlisting[language=Verilog]{../Model/test1.sv}
+\lstinputlisting[language=Verilog]{../Model/top.sv}
 
 % you can choose not to have a title for an appendix
 % if you want by leaving the argument blank
 %\section{}
 %Appendix two text goes here.
 
+\twocolumn
 
 % use section* for acknowledgement
-\section*{Acknowledgment}
-
-
-The authors would like to thank...
+%\section*{Acknowledgment}
+%The authors would like to thank...
 
 
 % Can use something like this to put references on a page
 % by themselves when using endfloat and the captionsoff option.
-\ifCLASSOPTIONcaptionsoff
-  \newpage
-\fi
+%\ifCLASSOPTIONcaptionsoff
+%  \newpage
+%\fi
 
 
 
@@ -824,13 +851,13 @@ The authors would like to thank...
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-\begin{thebibliography}{1}
+%\begin{thebibliography}{1}
 
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+%\bibitem{IEEEhowto:kopka}
+%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
+%  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
 
-\end{thebibliography}
+%\end{thebibliography}
 
 
 % that's all folks
