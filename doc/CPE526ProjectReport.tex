@@ -649,7 +649,7 @@ Verification of the elevator controller was accomplished with directed testing a
 The idea behind directed testing was to identify specific test cases that would verify high level functionality for the elevator controller.
 
 \subsubsection{Implementation}
-A test bench was created in VHDL that read inputs to the elevator controller from a text file. The test bench consisted of two parts. The design under test (DUT) and a door sensor model (DSM). The DSM was used to provide the doors closed (DC) input to the elevator controller. The purpose of using the DSM to provide the DC input to the elevator controller was to mimic the real-world operation of a elevator controller. The DSM was triggered to start via the door output of the elevator controller. When the door output of the elevator controller goes high the DSM starts and after a few clock cycles the DSM asserts DC.
+A test bench was created in VHDL that read inputs to the elevator controller from a text file. The test bench consisted of two parts. The design under test (DUT) and a door sensor model (DSM). The DSM was used to provide the doors closed (DC) input to the elevator controller. The purpose of using the DSM to provide the DC input to the elevator controller was to mimic the real-world operation of an elevator controller. The DSM was triggered to start via the door output of the elevator controller. When the door output of the elevator controller goes high the DSM starts and after a few clock cycles the DSM asserts DC.
 
 \subsubsection{Directed Test Cases}
 Each directed test case was seperated by asserting reset so at the beginning of each test case the elevator was in the Closing Doors 1 state with DC high.
@@ -660,9 +660,9 @@ The second test case has a request at floor 2 and floor 3 to go up. When the ele
 
 The third test case has a request at floor 2 to go up. When the elevator arrives at floor 2, a passenger requests to travel to floor 1. The elevator should travel to floor 2, take on the passenger and travel back down to floor 1.
 
-The forth test case has a request at floor 2 to go up and floor 3 to go down. When the elevator arrives at floor 2, a passenger requests to travel to floor 1. When the elevator arrives at floor 3, no passengers get on the elevator. For this test case, the elevator should travel up to floor 2, take on a passenger and then continue on to floor 3. At floor 3, since there are not passengers the elevator should leave the doors opened until the door time expires and then wait for the DC sensor input to be high. Once the DC sensor input goes high, the elevator should travel down to floor 1 and off-load the passenger.
+The forth test case has a request at floor 2 to go up and floor 3 to go down. When the elevator arrives at floor 2, a passenger requests to travel to floor 1. When the elevator arrives at floor 3, no passengers get on the elevator. For this test case, the elevator should travel up to floor 2, take on a passenger and then continue on to floor 3. At floor 3, since there are no passengers, the elevator should leave the doors opened until the door time expires and then wait for the DC sensor input to be high. Once the DC sensor input goes high, the elevator should travel down to floor 1 and off-load the passenger.
 
-The fifth and final test case has all external requests active simultaneously. At floor 1, passengers request to travel to floor 2 and floor 3. When the elevator arrives at floor 2, passengers request to travel to floor 1 and floor 3. When the elevator arrives at floor 3 a passenger requests to travel to floor 1. The elevator should take on passengers at floor 1, travel to floor 2 and off-load and load more passengers. Then the elevator should travel to floor 3 and off-load and load more passengers and continue down to floor 1 and off-load the passengers.
+The fifth and final test case has all external requests active simultaneously. At floor 1, passengers request to travel to floor 2 and floor 3. When the elevator arrives at floor 2, passengers request to travel to floor 1 and floor 3. When the elevator arrives at floor 3, a passenger requests to travel to floor 1. The elevator should take on passengers at floor 1, travel to floor 2 and off-load and load more passengers. Then the elevator should travel to floor 3 and off-load and load more passengers and continue down to floor 1 and off-load the passengers.
 
 \subsubsection{Verification using Directed Testing}
 The test bench used assertions to check the door and direction outputs of the elevator controller. The test bench read in the expected values from the input text file and asserted the values after 2 nanoseconds following the rising edge of the clock. This was due to our output being driven on the rising edge of the clock. For the directed test cases described in the previous section we verified the correctness of the elevator controller.
@@ -719,7 +719,7 @@ The state machine below, figure 3, shows the state-to-state transitions for the 
 \label{synth_state_machine}
 \end{figure}
 
-Figue 4 shows the start of the synthesis demonstration with RST high. When RST is high the outputs door and direction are 1 and 00, respectively. 
+Figure 4 shows the start of the synthesis demonstration with RST high. When RST is high, the outputs door and direction are 1 and 00$_{2}$, respectively. 
 
 % Reset
 \begin{figure}[h]
@@ -729,7 +729,7 @@ Figue 4 shows the start of the synthesis demonstration with RST high. When RST i
 \label{reset}
 \end{figure}
 
-FIgure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set high and the elevator transitions to the Up1To2 state. The inputs are latched meaning it is not required to keep F2 or DC high for the duration of the Up1To2 state. The outputs door and direction are 1 and 01, respectively. 
+Figure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set high and the elevator transitions to the Up1To2 state. The inputs are latched meaning it is not required to keep F2 or DC high for the duration of the Up1To2 state. The outputs door and direction are 1 and 01$_{2}$, respectively. 
 
 % Up1To2
 \begin{figure}[h]
@@ -739,7 +739,7 @@ FIgure 5 shows the transition to the Up1To2 state. The inputs F2 and DC are set 
 \label{up1to2}
 \end{figure}
 
-When the Floor Sensor (FS) inputs are 10 the elevator will transition to the OpenedDoors2 state and the outputs door and direction will be 0 and 00, respectively. It is not shown in figure 6 but the LED representing the door output actually went off for a few clock cycles. Once the input at floor 2 is recognized the door output of the elevator is high. 
+When the Floor Sensor (FS) input is 10$_{2}$, the elevator will transition to the OpenedDoors2 state, and the outputs door and direction will be 0 and 00$_{2}$, respectively. It is not shown in figure 6, but the LED representing the door output actually went off for a few clock cycles. Once the input at floor 2 is recognized the door output of the elevator is high. 
 
 % Floor2
 \begin{figure}[h]
@@ -749,7 +749,7 @@ When the Floor Sensor (FS) inputs are 10 the elevator will transition to the Ope
 \label{floor2}
 \end{figure}
 
-Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and direction are 1 and 01, respectively. 
+Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and direction are 1 and 01$_{2}$, respectively. 
 
 % Up2To3
 \begin{figure}[h]
@@ -759,7 +759,7 @@ Figure 7 shows the request on floor 2 to go to floor 3 and the outputs door and 
 \label{up2to3}
 \end{figure}
 
-Figure 8 shows the final state of the elevator travelling from floor 3 down to floor 2. The outputs door and direction are 1 and 10, respectively, for this case.
+Figure 8 shows the final state of the elevator travelling from floor 3 down to floor 2. The outputs door and direction are 1 and 10$_{2}$, respectively, for this case.
 
 % Down3To2
 \begin{figure}[h]
