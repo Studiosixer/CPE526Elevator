@@ -463,10 +463,10 @@
 \maketitle
 
 
-\begin{abstract}
+%\begin{abstract}
 %\boldmath
-The abstract goes here.
-\end{abstract}
+%The abstract goes here.
+%\end{abstract}
 % IEEEtran.cls defaults to using nonbold math in the Abstract.
 % This preserves the distinction between vectors and scalars. However,
 % if the journal you are submitting to favors bold math in the abstract,
@@ -641,14 +641,120 @@ The elevator controller also keeps up with the last floor it has visited. This p
 
 
 \section{Verification}
-Wesley and Justin
+Verification of the elevator controller was accomplished with directed testing and random testing. We used two types of testing methods due to the number of different combinations that are possible with the inputs to the elevator controller.
 
 \subsection{Directed Testing}
-Justin
+
+The idea behind directed testing was to identify specific test cases that would verify high level functionality for the elevator controller.
+
+\subsubsection{Implementation}
+A test bench was created in VHDL that read inputs to the elevator controller from a text file. The test bench consisted of two parts. The design under test (DUT) and a door sensor model (DSM). The DSM was used to provide the doors closed (DC) input to the elevator controller. The purpose of using the DSM to provide the DC input to the elevator controller was to mimic the real-world operation of a elevator controller. The DSM was triggered to start via the door output of the elevator controller. When the door output of the elevator controller goes high the DSM starts and after a few clock cycles the DSM asserts DC.
+
+\subsubsection{Directed Test Cases}
+Each directed test case was seperated by asserting reset so at the beginning of each test case the elevator was in the Closing Doors 1 state with DC high.
+
+The first test case has a request at floor 2 to go up. When the elevator arrives at floor 2, a passenger requests internally to go to floor 3. For this test case, we expect the elevator to travel to floor 2, take on a passenger and continue to floor 3 to off-load the passenger.
+
+The second test case has a request at floor 2 and floor 3 to go up. When the elevator arrives at floor 3, a passenger requests internally to go to floor 1. When the elevator arrives at floor 2, a passenger requests internally to go to floor 3. The elevator should travel up to floor 3 before stopping on floor 2 because the request on floor 2 is to go down. At floor 2, since the internal request is to go up to floor 3 while there is another pending request to go to floor 1, we expect the elevator to travel to floor 1 and off-load the passenger prior to handling the request at floor 2 to go to floor 3. 
+
+The third test case has a request at floor 2 to go up. When the elevator arrives at floor 2, a passenger requests to travel to floor 1. The elevator should travel to floor 2, take on the passenger and travel back down to floor 1.
+
+The forth test case has a request at floor 2 to go up and floor 3 to go down. When the elevator arrives at floor 2, a passenger requests to travel to floor 1. When the elevator arrives at floor 3, no passengers get on the elevator. For this test case, the elevator should travel up to floor 2, take on a passenger and then continue on to floor 3. At floor 3, since there are not passengers the elevator should leave the doors opened until the door time expires and then wait for the DC sensor input to be high. Once the DC sensor input goes high, the elevator should travel down to floor 1 and off-load the passenger.
+
+The fifth and final test case has all external requests active simultaneously. At floor 1, passengers request to travel to floor 2 and floor 3. When the elevator arrives at floor 2, passengers request to travel to floor 1 and floor 3. When the elevator arrives at floor 3 a passenger requests to travel to floor 1. The elevator should take on passengers at floor 1, travel to floor 2 and off-load and load more passengers. Then the elevator should travel to floor 3 and off-load and load more passengers and continue down to floor 1 and off-load the passengers.
+
+\subsubsection{Verification using Directed Testing}
+The test bench used assertions to check the door and direction outputs of the elevator controller. The test bench read in the expected values from the input text file and asserted the values after 2 nanoseconds following the rising edge of the clock. This was due to our output being driven on the rising edge of the clock. For the directed test cases described in the previous section we verified the correctness of the elevator controller.
+
+\subsubsection{Drawbacks}
+One of the drawbacks to using the VHDL test bench to verify our elevator controller model was the limited coverage of the possible input combinations. Another drawback to the VHDL test bench was the inability to randomnly vary timing of inputs. For example, to vary the amount of time the elevator takes to travel from floor 1 to 2 the floor sensor input in the text file had to repeated multiple times. 
 
 \subsection{Random Testing}
 
+\subsubsection{Goals}
+In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Below is a waveform of the button signals being set high randomly.
+
+\subsubsection{Implementation}
+In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Below is a waveform of the button signals being set high randomly.
+
+% Random Button Press Figure
+%\begin{figure*}[t]
+%\centering
+%\includegraphics[width=0.9\linewidth]{}
+%\caption{State Diagram}
+%\label{fig_state_machine}
+%\end{figure*}
+
+\subsubsection{External Modules}
+The elevator requires the use of the two sensors mentioned earlier, the floor sensor and the doors closed sensor. Both of these were instantiated in the system verilog test and used to supply their respective signals to the system. These modules, in an actual implementation, would read what floor the elevator was at or read when the doors had been closed. These system verilog modules were designed to simply act like timers. When triggered, either module will wait a specified number of clock cycles and assert it’s appropriate signal. This wait is supposed to emulate the time before a sensor is triggered. In fact, one of the initial, directed system verilog test actually randomizes the wait before the floor sensor’s assertion as it walks through the elevator states. But the primary system verilog test did not do randomization to the floor sensor/door closed waits.
+
+\subsubsection{Verification Manager}
+The system’s inputs are random and this produces many different types of outputs. This is good for identifying design errors, but only if the errors are identified. This is where the verification manager module is used.
+
+The basic functionality of the verification manager module is based on floor requests. A floor request can be either a button on that floor pressing a button (up or down) or an internal floor button pressing the button for that floor. For example, if a user on floor one pressed the up button, that would be considered a “floor one request.” Likewise, if a user inside the elevator pressed the floor one button, that would also be a “floor one request.” Each request is an object of type floorRequest. This floorRequest object currently only contains an integer. This allows for expandability in future use.
+
+When a request for a floor is made, the request is placed in a queue and the status of the request is printed to the console. If the request cannot be immediately accepted, the floor that the elevator is currently on is also printed to the console. The queue used here is a data structure that is built into system verilog and has its own push, pop and delete functions. While this queue was useful in the design, it did not act like a typical queue structure would have. Rather, the queue acted as a simple storage holder for all requests. This could not be a true queue because of the nature of floor requests. If the elevator was on floor three and floor one made a request to go down immediately followed by floor two, the elevator would need to first grant floor two’s request. Not go down to floor one and then back up to floor two. As a note for future design possibilities, if the request system was redesigned to handle either up or down floor requests, a priority queue could be implemented with easier manipulation.
+
+On every state change, the queue is searched for pending requests that could be accepted (based on the new state) and will print out a confirmation statement when the request has been accepted i.e. the requested floor has been reached and the request is deleted from the queue.
+
 \section{Synthesis}
+The elevator controller model was synthesized using Quartus II with the Cyclone II FPGA  on a Altera test board. The layout of the elevator controller model on the Altera test board in shown in the figure below. The inputs U1, U2, D2, D3, F1, F2, F3, FS, DC and Reset (RST) are controlled with switches as seen in the figure below. The outputs of the elevator controller, door and direction, were configured as LEDs. The seven segment display was not used during synthesis. 
+
+% Altera Configuration
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Altera_Config.jpg}
+\caption{Configuration of Elevator Controller on Altera board.}
+\label{altera_configuration}
+\end{figure}
+
+% Synth State Machine
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Synth_State_Machine.jpg}
+\caption{Add Caption.}
+\label{synth_state_machine}
+\end{figure}
+
+% Reset
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Reset.jpg}
+\caption{Reset.}
+\label{reset}
+\end{figure}
+
+% Up1To2
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Up1To2.jpg}
+\caption{Up1To2 State on Altera board.}
+\label{up1to2}
+\end{figure}
+
+% Floor2
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Floor2.jpg}
+\caption{Floor2 on Altera board.}
+\label{floor2}
+\end{figure}
+
+% Up2To3
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Up2To3.jpg}
+\caption{Up2To3 State on Altera board.}
+\label{up2to3}
+\end{figure}
+
+% Down3To2
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{Down3To2.jpg}
+\caption{Down3To2 State on Altera board.}
+\label{down3to2}
+\end{figure}
 
 \section{Conclusions}
 
