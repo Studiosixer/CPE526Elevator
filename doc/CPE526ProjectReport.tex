@@ -683,9 +683,6 @@ One of the drawbacks to using the VHDL test bench to verify our elevator control
 \subsubsection{Goals}
 In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Figure \ref{bttn_press_waveform} is a waveform of the button signals being set high randomly.
 
-\subsubsection{Implementation}
-In order to test the elevator for elevators in the most normal usage, namely, button pressing, this was what the system verilog test aimed at. The scenario would be analogous to users on the first, second, and third floor as well as a user inside the elevator. These users would, theoretically, be pressing all of the buttons at different times. Figure \ref{bttn_press_waveform} is a waveform of the button signals being set high randomly.
-
 \subsubsection{External Modules}
 The elevator requires the use of the two sensors mentioned earlier, the floor sensor and the doors closed sensor. Both of these were instantiated in the system verilog test and used to supply their respective signals to the system. These modules, in an actual implementation, would read what floor the elevator was at or read when the doors had been closed. These system verilog modules were designed to simply act like timers. When triggered, either module will wait a specified number of clock cycles and assert its appropriate signal. This wait is supposed to emulate the time before a sensor is triggered. In fact, one of the initial, directed system verilog tests actually randomizes the wait before the floor sensor’s assertion as it walks through the elevator states. But the primary system verilog test did not do randomization to the floor sensor/door closed waits.
 
