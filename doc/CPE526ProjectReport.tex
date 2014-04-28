@@ -770,10 +770,7 @@ Figure \ref{down3to2} shows the final state of the elevator travelling from floo
 \end{figure}
 
 \section{Conclusions}
-Add conclusions here.
-
-
-
+One of the most challenging parts of the project was testing the elevator model. Having nine inputs to the model increased the complexity of testing, for it increased the number of possible input combinations. Having a testbench that provided inputs from a file helped verification, but it was limited by the fact that it was difficult to modify. The VHDL test bench was also limited in coverage of input combinations. System Verilog greatly improved verification as it was easier to modify as well as being able to provide random testing of the input signals. Using assertions in System Verilog also improved verification as they were easier to read than waveforms. Another portion of the design that aided in verification was the verification manager. This allowed one to trace through the requests that the elevator was making and ensure the elevator properly responded to each request.
 
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
